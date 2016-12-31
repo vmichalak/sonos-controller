@@ -1,0 +1,5 @@
+rootProject.name = 'sonoscontroller'
+
+//Include SSDP Client Protocol Library (https://github.com/vmichalak/ssdp-client)
+include ':libProtocolSSDP'
+project(':libProtocolSSDP').projectDir = new File(settingsDir, '../ssdp-client')
