@@ -1,5 +1,5 @@
 # sonos-controller
-Java client for controlling your sonos devices.
+Java API for controlling [SONOS](http://www.sonos.com/) players.
 
 It's a work in progress.
 
