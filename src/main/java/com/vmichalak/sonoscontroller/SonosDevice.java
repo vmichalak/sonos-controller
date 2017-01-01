@@ -102,6 +102,14 @@ public class SonosDevice {
                 "<DesiredZoneName>" + playerName + "</DesiredZoneName><DesiredIcon /><DesiredConfiguration />");
     }
 
+    public boolean getLedState() throws IOException {
+        String r = this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "GetLEDState", "");
+        Pattern pattern = Pattern.compile("<CurrentLEDState>(.*)</CurrentLEDState>");
+        Matcher matcher = pattern.matcher(r);
+        matcher.find();
+        return matcher.group(1).contains("On") ? true : false;
+    }
+
     public void setLedState(boolean state) throws IOException {
         String s = state ? "On" : "Off";
         this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "SetLEDState",
