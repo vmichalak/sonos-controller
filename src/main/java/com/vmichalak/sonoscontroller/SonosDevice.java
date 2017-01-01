@@ -1,6 +1,7 @@
 package com.vmichalak.sonoscontroller;
 
 import com.vmichalak.protocol.ssdp.Device;
+import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -35,39 +36,40 @@ public class SonosDevice {
 
     //<editor-fold desc="AV TRANSPORT">
 
-    public void play() throws IOException {
+    public void play() throws IOException, UPnPSonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Play",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
-    public void playUri(String uri, String meta) throws IOException {
+    public void playUri(String uri, String meta) throws IOException, UPnPSonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetAVTransportURI",
                 "<InstanceID>0</InstanceID><CurrentURI>" + uri
                 + "</CurrentURI><CurrentURIMetaData>" + meta + "</CurrentURIMetaData>");
+
         this.play();
     }
 
-    public void pause() throws IOException {
+    public void pause() throws IOException, UPnPSonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Pause",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
-    public void stop() throws IOException {
+    public void stop() throws IOException, UPnPSonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Stop",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
-    public void next() throws IOException {
+    public void next() throws IOException, UPnPSonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Next",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
-    public void previous() throws IOException {
+    public void previous() throws IOException, UPnPSonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Previous",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
-    public void clearQueue() throws IOException {
+    public void clearQueue() throws IOException, UPnPSonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "RemoveAllTracksFromQueue",
                 "<InstanceID>0</InstanceID>");
     }
@@ -76,19 +78,18 @@ public class SonosDevice {
 
     //<editor-fold desc="RENDERING">
 
-    public int getVolume() throws IOException {
+    public int getVolume() throws IOException, UPnPSonosControllerException {
         String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetVolume",
                 "<InstanceID>0</InstanceID><Channel>Master</Channel>");
 
         Pattern pattern = Pattern.compile("<CurrentVolume>([0-9]*)</CurrentVolume>");
         Matcher matcher = pattern.matcher(r);
         matcher.find();
-        //TODO: Check errors
 
         return Integer.parseInt(matcher.group(1));
     }
 
-    public void setVolume(int volume) throws IOException {
+    public void setVolume(int volume) throws IOException, UPnPSonosControllerException {
         this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetVolume",
                 "<InstanceID>0</InstanceID><Channel>Master</Channel><DesiredVolume>" + volume + "</DesiredVolume>");
     }
@@ -97,20 +98,20 @@ public class SonosDevice {
 
     //<editor-fold desc="DEVICE">
 
-    public void setPlayerName(String playerName) throws IOException {
+    public void setPlayerName(String playerName) throws IOException, UPnPSonosControllerException {
         this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "SetZoneAttributes",
                 "<DesiredZoneName>" + playerName + "</DesiredZoneName><DesiredIcon /><DesiredConfiguration />");
     }
 
-    public boolean getLedState() throws IOException {
+    public boolean getLedState() throws IOException, UPnPSonosControllerException {
         String r = this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "GetLEDState", "");
         Pattern pattern = Pattern.compile("<CurrentLEDState>(.*)</CurrentLEDState>");
         Matcher matcher = pattern.matcher(r);
         matcher.find();
-        return matcher.group(1).contains("On") ? true : false;
+        return matcher.group(1).equals("On") ? true : false;
     }
 
-    public void setLedState(boolean state) throws IOException {
+    public void setLedState(boolean state) throws IOException, UPnPSonosControllerException {
         String s = state ? "On" : "Off";
         this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "SetLEDState",
                 "<DesiredLEDState>" + s + "</DesiredLEDState>");
@@ -130,7 +131,7 @@ public class SonosDevice {
      * @return the raw response body returned by the Sonos speaker.
      * @throws IOException
      */
-    private String sendCommand(String endpoint, String service, String action, String body) throws IOException {
+    private String sendCommand(String endpoint, String service, String action, String body) throws IOException, UPnPSonosControllerException {
         if(this.httpClient == null) { this.httpClient = HttpClientBuilder.create().build(); }
         String uri = "http://" + this.ip + ":" + SOAP_PORT + endpoint;
         HttpPost request = new HttpPost(uri);
@@ -142,11 +143,30 @@ public class SonosDevice {
                         + body
                         + "</u:" + action + ">"
                         + "</s:Body></s:Envelope>";
-        HttpEntity entity = null;
-        entity = new ByteArrayEntity(content.getBytes("UTF-8"));
+        HttpEntity entity = new ByteArrayEntity(content.getBytes("UTF-8"));
         request.setEntity(entity);
         HttpResponse response = httpClient.execute(request);
-        return EntityUtils.toString(response.getEntity());
+        String responseString = EntityUtils.toString(response.getEntity());
+        handleError(responseString);
+        return responseString;
+    }
+
+    private void handleError(String response) throws UPnPSonosControllerException {
+        if(!response.contains("errorCode")) { return; }
+        Pattern errorCodePattern = Pattern.compile("<errorCode>([0-9]*)</errorCode>");
+        Matcher errorCodeMatcher = errorCodePattern.matcher(response);
+        errorCodeMatcher.find();
+        Pattern descriptionPattern = Pattern.compile("<errorDescription>(.*)</errorDescription>");
+        Matcher descriptionMatcher = descriptionPattern.matcher(response);
+        descriptionMatcher.find();
+        int errorCode = Integer.parseInt(errorCodeMatcher.group(1));
+        String errorDescription = "";
+        if(descriptionMatcher.groupCount() < 1) {
+            errorDescription = descriptionMatcher.group(1);
+        }
+        throw new UPnPSonosControllerException(
+                "UPnP Error " + errorCode +" received: " + errorDescription + " from " + this.ip,
+                errorCode, errorDescription, response);
     }
 
     @Override
