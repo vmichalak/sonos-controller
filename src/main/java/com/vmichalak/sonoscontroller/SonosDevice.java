@@ -11,6 +11,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SonosDevice {
     private final static int    SOAP_PORT                   = 1400;
@@ -31,53 +33,65 @@ public class SonosDevice {
         this.ip = ip;
     }
 
-    public static SonosDevice instantiateFromSSDPDevice(Device device) throws IOException {
-        HttpClient client = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(device.getDescriptionUrl());
-        HttpResponse response = client.execute(request);
-
-        System.out.println(response.toString());
-
-        return new SonosDevice(device.getIPAddress());
-    }
-
     //<editor-fold desc="AV TRANSPORT">
 
     public void play() throws IOException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Play", "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Play",
+                "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
     public void playUri(String uri, String meta) throws IOException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetAVTransportURI",
                 "<InstanceID>0</InstanceID><CurrentURI>" + uri
                 + "</CurrentURI><CurrentURIMetaData>" + meta + "</CurrentURIMetaData>");
-        //if ENQUEUE_RESPONSE
         this.play();
     }
 
     public void pause() throws IOException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Pause", "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Pause",
+                "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
     public void stop() throws IOException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Stop", "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Stop",
+                "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
     public void next() throws IOException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Next", "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Next",
+                "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
     public void previous() throws IOException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Previous", "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Previous",
+                "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
     public void clearQueue() throws IOException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "RemoveAllTracksFromQueue", "<InstanceID>0</InstanceID>");
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "RemoveAllTracksFromQueue",
+                "<InstanceID>0</InstanceID>");
     }
 
     //</editor-fold>
 
     //<editor-fold desc="RENDERING">
+
+    public int getVolume() throws IOException {
+        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetVolume",
+                "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+
+        Pattern pattern = Pattern.compile("<CurrentVolume>([0-9]*)</CurrentVolume>");
+        Matcher matcher = pattern.matcher(r);
+        matcher.find();
+        //TODO: Check errors
+
+        return Integer.parseInt(matcher.group(1));
+    }
+
+    public void setVolume(int volume) throws IOException {
+        this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetVolume",
+                "<InstanceID>0</InstanceID><Channel>Master</Channel><DesiredVolume>" + volume + "</DesiredVolume>");
+    }
 
     //</editor-fold>
 
@@ -90,7 +104,8 @@ public class SonosDevice {
 
     public void setLedState(boolean state) throws IOException {
         String s = state ? "On" : "Off";
-        this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "SetLEDState", "<DesiredLEDState>" + s + "</DesiredLEDState>");
+        this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "SetLEDState",
+                "<DesiredLEDState>" + s + "</DesiredLEDState>");
     }
 
     //</editor-fold>
