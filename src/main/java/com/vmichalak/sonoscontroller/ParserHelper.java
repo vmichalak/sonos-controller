@@ -8,7 +8,6 @@ class ParserHelper {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(content);
         matcher.find();
-        if(matcher.groupCount() < 2) { return null; }
         return matcher.group(1);
     }
 }

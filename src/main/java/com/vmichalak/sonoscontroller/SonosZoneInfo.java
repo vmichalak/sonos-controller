@@ -31,13 +31,13 @@ public class SonosZoneInfo {
         return Collections.unmodifiableList(zonePlayerUIDInGroup);
     }
 
-    public List<SonosDevice> getSonosDeviceInGroup() {
+    public List<SonosDevice> getSonosDevicesInGroup() {
         ArrayList<SonosDevice> devices = new ArrayList<SonosDevice>();
         for (String uid : zonePlayerUIDInGroup) {
             try {
-                Device device = SSDPClient.discoverOne(1000, "uuid:" + uid);
+                SonosDevice device = SonosDiscovery.discoverByUID(uid);
                 if(device != null) {
-                    devices.add(new SonosDevice(device.getIPAddress()));
+                    devices.add(device);
                 }
             }
             catch (IOException e) { }

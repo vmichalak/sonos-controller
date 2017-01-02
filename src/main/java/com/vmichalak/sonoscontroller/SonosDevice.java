@@ -154,7 +154,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public List<SonosDevice> joinedWith() throws IOException, SonosControllerException {
-        return this.getZoneGroupState().getSonosDeviceInGroup();
+        return this.getZoneGroupState().getSonosDevicesInGroup();
     }
 
     /**
@@ -386,12 +386,10 @@ public class SonosDevice {
 
     private void handleError(String response) throws SonosControllerException {
         if(!response.contains("errorCode")) { return; }
-        int errorCode = Integer.parseInt(ParserHelper.findOne("<errorCode>(.*)</errorCode>", response));
-        String errorDescription = ParserHelper.findOne("<errorDescription>(.*)</errorDescription>", response);
-        if(errorDescription == null) { errorDescription = ""; }
+        int errorCode = Integer.parseInt(ParserHelper.findOne("<errorCode>([0-9]*)</errorCode>", response));
         throw new UPnPSonosControllerException(
-                "UPnP Error " + errorCode +" received: " + errorDescription + " from " + this.ip,
-                errorCode, errorDescription, response);
+                "UPnP Error " + errorCode +" received from " + this.ip,
+                errorCode, "", response);
     }
 
     @Override

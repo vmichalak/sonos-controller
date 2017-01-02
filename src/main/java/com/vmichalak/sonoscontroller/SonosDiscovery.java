@@ -9,7 +9,7 @@ import java.util.List;
 
 public class SonosDiscovery {
     /**
-     * Discover all SONOS speakers on network using SSDP (Simple Service Discovery Protocol);
+     * Discover all SONOS speakers on network using SSDP (Simple Service Discovery Protocol).
      * @return List of SONOS speakers
      * @throws IOException
      */
@@ -19,4 +19,28 @@ public class SonosDiscovery {
         for (Device device : source) { output.add(new SonosDevice(device.getIPAddress())); }
         return output;
     }
+
+    /**
+     * Discover one SONOS speakers on network using SSDP (Simple Service Discovery Protocol).
+     * @return SONOS speaker
+     * @throws IOException
+     */
+    public static SonosDevice discoverOne() throws IOException {
+        Device source = SSDPClient.discoverOne(1000, "urn:schemas-upnp-org:device:ZonePlayer:1");
+        if(source == null) { return null; }
+        return new SonosDevice(source.getIPAddress());
+    }
+
+    /**
+     * Discover one SONOS speakers on network using SSDP (Simple Service Discovery Protocol) by UID.
+     * @param uid Sonos Speaker UID
+     * @return SONOS speaker
+     * @throws IOException
+     */
+    public static SonosDevice discoverByUID(String uid) throws IOException {
+        Device source = SSDPClient.discoverOne(1000, "uuid:" + uid);
+        if(source == null) { return null; }
+        return new SonosDevice(source.getIPAddress());
+    }
+
 }
