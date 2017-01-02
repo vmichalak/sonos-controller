@@ -148,6 +148,16 @@ public class SonosDevice {
     }
 
     /**
+     * Get all Sonos speaker joined with this speaker.
+     * @return List of Sonos speaker joined with this speaker.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public List<SonosDevice> joinedWith() throws IOException, SonosControllerException {
+        return this.getZoneGroupState().getSonosDeviceInGroup();
+    }
+
+    /**
      * Join this Sonos speaker to another.
      * @param master master speaker
      * @throws IOException
@@ -376,7 +386,7 @@ public class SonosDevice {
 
     private void handleError(String response) throws SonosControllerException {
         if(!response.contains("errorCode")) { return; }
-        int errorCode = Integer.parseInt(ParserHelper.findOne("<errorCode>([0-9]*)</errorCode>", response));
+        int errorCode = Integer.parseInt(ParserHelper.findOne("<errorCode>(.*)</errorCode>", response));
         String errorDescription = ParserHelper.findOne("<errorDescription>(.*)</errorDescription>", response);
         if(errorDescription == null) { errorDescription = ""; }
         throw new UPnPSonosControllerException(

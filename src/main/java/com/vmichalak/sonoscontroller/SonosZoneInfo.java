@@ -36,7 +36,9 @@ public class SonosZoneInfo {
         for (String uid : zonePlayerUIDInGroup) {
             try {
                 Device device = SSDPClient.discoverOne(1000, "uuid:" + uid);
-                devices.add(new SonosDevice(device.getIPAddress()));
+                if(device != null) {
+                    devices.add(new SonosDevice(device.getIPAddress()));
+                }
             }
             catch (IOException e) { }
         }
