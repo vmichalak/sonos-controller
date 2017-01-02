@@ -101,6 +101,32 @@ public class SonosDevice {
     }
 
     /**
+     * Get the play mode for the queue.
+     * @return current PlayMode of the queue
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public PlayMode getPlayMode() throws IOException, SonosControllerException {
+        String r = this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "GetTransportSettings",
+                "<InstanceID>0</InstanceID>");
+        Pattern pattern = Pattern.compile("<PlayMode>(.*)</PlayMode>");
+        Matcher matcher = pattern.matcher(r);
+        matcher.find();
+        return PlayMode.valueOf(matcher.group(1));
+    }
+
+    /**
+     * Sets the play mode for the queue.
+     * @param playMode
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void setPlayMode(PlayMode playMode) throws IOException, SonosControllerException {
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetPlayMode",
+                "<InstanceID>0</InstanceID><NewPlayMode>" + playMode + "</NewPlayMode>");
+    }
+
+    /**
      * Remove all tracks from the queue.
      * @throws IOException
      * @throws SonosControllerException
