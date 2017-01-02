@@ -11,8 +11,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SonosDevice {
     private final static int    SOAP_PORT                   = 1400;
@@ -109,10 +107,7 @@ public class SonosDevice {
     public PlayMode getPlayMode() throws IOException, SonosControllerException {
         String r = this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "GetTransportSettings",
                 "<InstanceID>0</InstanceID>");
-        Pattern pattern = Pattern.compile("<PlayMode>(.*)</PlayMode>");
-        Matcher matcher = pattern.matcher(r);
-        matcher.find();
-        return PlayMode.valueOf(matcher.group(1));
+        return PlayMode.valueOf(ParserHelper.findOne("<PlayMode>(.*)</PlayMode>", r));
     }
 
     /**
@@ -149,12 +144,7 @@ public class SonosDevice {
     public int getVolume() throws IOException, SonosControllerException {
         String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetVolume",
                 "<InstanceID>0</InstanceID><Channel>Master</Channel>");
-
-        Pattern pattern = Pattern.compile("<CurrentVolume>([0-9]*)</CurrentVolume>");
-        Matcher matcher = pattern.matcher(r);
-        matcher.find();
-
-        return Integer.parseInt(matcher.group(1));
+        return Integer.parseInt(ParserHelper.findOne("<CurrentVolume>([0-9]*)</CurrentVolume>", r));
     }
 
     /**
@@ -177,10 +167,7 @@ public class SonosDevice {
     public boolean getMute() throws IOException, SonosControllerException {
         String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetMute",
                 "<InstanceID>0</InstanceID><Channel>Master</Channel>");
-        Pattern pattern = Pattern.compile("<CurrentMute>([01])</CurrentMute>");
-        Matcher matcher = pattern.matcher(r);
-        matcher.find();
-        return matcher.group(1).equals("1") ? true : false;
+        return ParserHelper.findOne("<CurrentMute>([01])</CurrentMute>", r).equals("1") ? true : false;
     }
 
     /**
@@ -215,10 +202,7 @@ public class SonosDevice {
 
     public boolean getLedState() throws IOException, SonosControllerException {
         String r = this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "GetLEDState", "");
-        Pattern pattern = Pattern.compile("<CurrentLEDState>(.*)</CurrentLEDState>");
-        Matcher matcher = pattern.matcher(r);
-        matcher.find();
-        return matcher.group(1).equals("On") ? true : false;
+        return ParserHelper.findOne("<CurrentLEDState>(.*)</CurrentLEDState>", r).equals("On") ? true : false;
     }
 
     public void setLedState(boolean state) throws IOException, SonosControllerException {
@@ -267,17 +251,9 @@ public class SonosDevice {
 
     private void handleError(String response) throws SonosControllerException {
         if(!response.contains("errorCode")) { return; }
-        Pattern errorCodePattern = Pattern.compile("<errorCode>([0-9]*)</errorCode>");
-        Matcher errorCodeMatcher = errorCodePattern.matcher(response);
-        errorCodeMatcher.find();
-        Pattern descriptionPattern = Pattern.compile("<errorDescription>(.*)</errorDescription>");
-        Matcher descriptionMatcher = descriptionPattern.matcher(response);
-        descriptionMatcher.find();
-        int errorCode = Integer.parseInt(errorCodeMatcher.group(1));
-        String errorDescription = "";
-        if(descriptionMatcher.groupCount() < 1) {
-            errorDescription = descriptionMatcher.group(1);
-        }
+        int errorCode = Integer.parseInt(ParserHelper.findOne("<errorCode>([0-9]*)</errorCode>", response));
+        String errorDescription = ParserHelper.findOne("<errorDescription>(.*)</errorDescription>", response);
+        if(errorDescription == null) { errorDescription = ""; }
         throw new UPnPSonosControllerException(
                 "UPnP Error " + errorCode +" received: " + errorDescription + " from " + this.ip,
                 errorCode, errorDescription, response);
