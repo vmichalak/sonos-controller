@@ -1,12 +1,10 @@
 package com.vmichalak.sonoscontroller;
 
-import com.vmichalak.protocol.ssdp.Device;
 import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -102,6 +100,11 @@ public class SonosDevice {
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
+    /**
+     * Remove all tracks from the queue.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
     public void clearQueue() throws IOException, SonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "RemoveAllTracksFromQueue",
                 "<InstanceID>0</InstanceID>");
@@ -196,6 +199,10 @@ public class SonosDevice {
         String s = state ? "On" : "Off";
         this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "SetLEDState",
                 "<DesiredLEDState>" + s + "</DesiredLEDState>");
+    }
+
+    public void switchLedState() throws IOException, SonosControllerException {
+        setLedState(!getLedState());
     }
 
     //</editor-fold>
