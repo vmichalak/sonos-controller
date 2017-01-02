@@ -1,7 +1,9 @@
 package com.vmichalak.sonoscontroller;
 
+import com.vmichalak.protocol.ssdp.Device;
 import com.vmichalak.protocol.ssdp.SSDPClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,8 +34,12 @@ public class SonosZoneInfo {
     public List<SonosDevice> getSonosDeviceInGroup() {
         ArrayList<SonosDevice> devices = new ArrayList<SonosDevice>();
         for (String uid : zonePlayerUIDInGroup) {
-            SSDPClient.discoverOne(1000, "uuid:"+uid);
+            try {
+                Device device = SSDPClient.discoverOne(1000, "uuid:" + uid);
+                devices.add(new SonosDevice(device.getIPAddress()));
+            }
+            catch (IOException e) { }
         }
-        return null;
+        return devices;
     }
 }
