@@ -12,17 +12,21 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class SonosDevice {
-    private final static int    SOAP_PORT                   = 1400;
-    private final static String TRANSPORT_ENDPOINT          = "/MediaRenderer/AVTransport/Control";
-    private final static String TRANSPORT_SERVICE           = "urn:schemas-upnp-org:service:AVTransport:1";
-    private final static String RENDERING_ENDPOINT          = "/MediaRenderer/RenderingControl/Control";
-    private final static String RENDERING_SERVICE           = "urn:schemas-upnp-org:service:RenderingControl:1";
-    private final static String DEVICE_ENDPOINT             = "/DeviceProperties/Control";
-    private final static String DEVICE_SERVICE              = "urn:schemas-upnp-org:service:DeviceProperties:1";
-    private final static String CONTENT_DIRECTORY_ENDPOINT  = "/MediaServer/ContentDirectory/Control";
-    private final static String CONTENT_DIRECTORY_SERVICE   = "urn:schemas-upnp-org:service:ContentDirectory:1";
+    private final static int    SOAP_PORT                    = 1400;
+    private final static String TRANSPORT_ENDPOINT           = "/MediaRenderer/AVTransport/Control";
+    private final static String TRANSPORT_SERVICE            = "urn:schemas-upnp-org:service:AVTransport:1";
+    private final static String RENDERING_ENDPOINT           = "/MediaRenderer/RenderingControl/Control";
+    private final static String RENDERING_SERVICE            = "urn:schemas-upnp-org:service:RenderingControl:1";
+    private final static String DEVICE_ENDPOINT              = "/DeviceProperties/Control";
+    private final static String DEVICE_SERVICE               = "urn:schemas-upnp-org:service:DeviceProperties:1";
+    private final static String CONTENT_DIRECTORY_ENDPOINT   = "/MediaServer/ContentDirectory/Control";
+    private final static String CONTENT_DIRECTORY_SERVICE    = "urn:schemas-upnp-org:service:ContentDirectory:1";
+    private final static String ZONE_GROUP_TOPOLOGY_ENDPOINT = "/ZoneGroupTopology/Control";
+    private final static String ZONE_GROUP_TOPOLOGY_SERVICE  = "urn:upnp-org:serviceId:ZoneGroupTopology";
 
     private final String ip;
 
@@ -40,8 +44,9 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void play() throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Play",
+        String r = this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Play",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        System.out.println(r);
     }
 
     /**
@@ -130,6 +135,48 @@ public class SonosDevice {
     public void clearQueue() throws IOException, SonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "RemoveAllTracksFromQueue",
                 "<InstanceID>0</InstanceID>");
+    }
+
+    /**
+     * Return if the Sonos is joined with another one.
+     * @return True if is joined, false if is isn't
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public boolean isJoined() throws IOException, SonosControllerException {
+        return this.getZoneGroupState().getZonePlayerUIDInGroup().size() > 1;
+    }
+
+    /**
+     * Join this Sonos speaker to another.
+     * @param master master speaker
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void join(SonosDevice master) throws IOException, SonosControllerException {
+        this.join(master.getSpeakerInfo().getLocalUID());
+    }
+
+    /**
+     * Join this Sonos speaker to another.
+     * @param masterUID master speaker UID
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void join(String masterUID) throws IOException, SonosControllerException {
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetAVTransportURI",
+                "<InstanceID>0</InstanceID><CurrentURI>x-rincon:" + masterUID +
+                "</CurrentURI><CurrentURIMetaData></CurrentURIMetaData>");
+    }
+
+    /**
+     * Remove this speaker from a group.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void unjoin() throws IOException, SonosControllerException {
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "BecomeCoordinatorOfStandaloneGroup",
+                "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
     //</editor-fold>
@@ -226,6 +273,20 @@ public class SonosDevice {
 
     //</editor-fold>
 
+    //<editor-fold desc="ZONE GROUP TOPOLOGY">
+
+    public SonosZoneInfo getZoneGroupState() throws IOException, SonosControllerException {
+        String r = this.sendCommand(ZONE_GROUP_TOPOLOGY_ENDPOINT, ZONE_GROUP_TOPOLOGY_SERVICE, "GetZoneGroupAttributes",
+                "");
+        String name = ParserHelper.findOne("<CurrentZoneGroupName>(.*)</CurrentZoneGroupName>", r);
+        String id = ParserHelper.findOne("<CurrentZoneGroupID>(.*)</CurrentZoneGroupID>", r);
+        String devices = ParserHelper.findOne("<CurrentZonePlayerUUIDsInGroup>(.*)</CurrentZonePlayerUUIDsInGroup>", r);
+        List<String> deviceList = Arrays.asList(devices.split(","));
+        return new SonosZoneInfo(name, id, deviceList);
+    }
+
+    //</editor-fold>
+
     /**
      * Get information about the Sonos speaker.
      * @return Information about the Sonos speaker, such as the UID, MAC Address, and Zone Name.
@@ -240,39 +301,43 @@ public class SonosDevice {
         String responseString = EntityUtils.toString(response.getEntity());
         handleError(responseString);
 
-        String zoneName = ParserHelper.findOne("<ZoneName>(.*)</ZoneName>", responseString);
-        String zoneIcon = ParserHelper.findOne("<ZoneIcon>(.*)</ZoneIcon>", responseString);
-        String configuration = ParserHelper.findOne("<Configuration>(.*)</Configuration>", responseString);
-        String localUID = ParserHelper.findOne("<LocalUID>(.*)</LocalUID>", responseString);
-        String serialNumber = ParserHelper.findOne("<SerialNumber>(.*)</SerialNumber>", responseString);
-        String softwareVersion = ParserHelper.findOne("<SoftwareVersion>(.*)</SoftwareVersion>", responseString);
-        String softwareDate = ParserHelper.findOne("<SoftwareDate>(.*)</SoftwareDate>", responseString);
-        String softwareScm = ParserHelper.findOne("<SoftwareScm>(.*)</SoftwareScm>", responseString);
-        String minCompatibleVersion = ParserHelper.findOne("<MinCompatibleVersion>(.*)</MinCompatibleVersion>", responseString);
-        String legacyCompatibleVersion = ParserHelper.findOne("<LegacyCompatibleVersion>(.*)</LegacyCompatibleVersion>", responseString);
-        String hardwareVersion = ParserHelper.findOne("<HardwareVersion>(.*)</HardwareVersion>", responseString);
-        String dspVersion = ParserHelper.findOne("<DspVersion>(.*)</DspVersion>", responseString);
-        String hwFlags = ParserHelper.findOne("<HwFlags>(.*)</HwFlags>", responseString);
-        String hwFeatures = ParserHelper.findOne("<HwFeatures>(.*)</HwFeatures>", responseString);
-        String variant = ParserHelper.findOne("<Variant>(.*)</Variant>", responseString);
-        String generalFlags = ParserHelper.findOne("<GeneralFlags>(.*)</GeneralFlags>", responseString);
-        String ipAddress = ParserHelper.findOne("<IPAddress>(.*)</IPAddress>", responseString);
-        String macAddress = ParserHelper.findOne("<MACAddress>(.*)</MACAddress>", responseString);
-        String copyright = ParserHelper.findOne("<Copyright>(.*)</Copyright>", responseString);
-        String extraInfo = ParserHelper.findOne("<ExtraInfo>(.*)</ExtraInfo>", responseString);
-        String htAudioInCode = ParserHelper.findOne("<HTAudioInCode>(.*)</HTAudioInCode>", responseString);
-        String idxTrk = ParserHelper.findOne("<IdxTrk>(.*)</IdxTrk>", responseString);
-        String mdp2Ver = ParserHelper.findOne("<MDP2Ver>(.*)</MDP2Ver>", responseString);
-        String mdp3Ver = ParserHelper.findOne("<MDP3Ver>(.*)</MDP3Ver>", responseString);
-        String relBuild = ParserHelper.findOne("<RelBuild>(.*)</RelBuild>", responseString);
-        String whitelistBuild = ParserHelper.findOne("<WhitelistBuild>(.*)</WhitelistBuild>", responseString);
-        String prodUnit = ParserHelper.findOne("<ProdUnit>(.*)</ProdUnit>", responseString);
-        String fuseCfg = ParserHelper.findOne("<FuseCfg>(.*)</FuseCfg>", responseString);
-        String revokeFuse = ParserHelper.findOne("<RevokeFuse>(.*)</RevokeFuse>", responseString);
-        String authFlags = ParserHelper.findOne("<AuthFlags>(.*)</AuthFlags>", responseString);
-        String swFeatures = ParserHelper.findOne("<SwFeatures>(.*)</SwFeatures>", responseString);
-        String regState = ParserHelper.findOne("<RegState>(.*)</RegState>", responseString);
-        String customerID = ParserHelper.findOne("<CustomerID>(.*)</CustomerID>", responseString);
+        String zoneName                 = ParserHelper.findOne("<ZoneName>(.*)</ZoneName>", responseString);
+        String zoneIcon                 = ParserHelper.findOne("<ZoneIcon>(.*)</ZoneIcon>", responseString);
+        String configuration            = ParserHelper.findOne("<Configuration>(.*)</Configuration>", responseString);
+        String localUID                 = ParserHelper.findOne("<LocalUID>(.*)</LocalUID>", responseString);
+        String serialNumber             = ParserHelper.findOne("<SerialNumber>(.*)</SerialNumber>", responseString);
+        String softwareVersion          = ParserHelper.findOne("<SoftwareVersion>(.*)</SoftwareVersion>",
+                                        responseString);
+        String softwareDate             = ParserHelper.findOne("<SoftwareDate>(.*)</SoftwareDate>", responseString);
+        String softwareScm              = ParserHelper.findOne("<SoftwareScm>(.*)</SoftwareScm>", responseString);
+        String minCompatibleVersion     = ParserHelper.findOne("<MinCompatibleVersion>(.*)</MinCompatibleVersion>",
+                                        responseString);
+        String legacyCompatibleVersion  = ParserHelper.findOne("<LegacyCompatibleVersion>(.*)</LegacyCompatibleVersion>"
+                                        , responseString);
+        String hardwareVersion          = ParserHelper.findOne("<HardwareVersion>(.*)</HardwareVersion>",
+                                        responseString);
+        String dspVersion               = ParserHelper.findOne("<DspVersion>(.*)</DspVersion>", responseString);
+        String hwFlags                  = ParserHelper.findOne("<HwFlags>(.*)</HwFlags>", responseString);
+        String hwFeatures               = ParserHelper.findOne("<HwFeatures>(.*)</HwFeatures>", responseString);
+        String variant                  = ParserHelper.findOne("<Variant>(.*)</Variant>", responseString);
+        String generalFlags             = ParserHelper.findOne("<GeneralFlags>(.*)</GeneralFlags>", responseString);
+        String ipAddress                = ParserHelper.findOne("<IPAddress>(.*)</IPAddress>", responseString);
+        String macAddress               = ParserHelper.findOne("<MACAddress>(.*)</MACAddress>", responseString);
+        String copyright                = ParserHelper.findOne("<Copyright>(.*)</Copyright>", responseString);
+        String extraInfo                = ParserHelper.findOne("<ExtraInfo>(.*)</ExtraInfo>", responseString);
+        String htAudioInCode            = ParserHelper.findOne("<HTAudioInCode>(.*)</HTAudioInCode>", responseString);
+        String idxTrk                   = ParserHelper.findOne("<IdxTrk>(.*)</IdxTrk>", responseString);
+        String mdp2Ver                  = ParserHelper.findOne("<MDP2Ver>(.*)</MDP2Ver>", responseString);
+        String mdp3Ver                  = ParserHelper.findOne("<MDP3Ver>(.*)</MDP3Ver>", responseString);
+        String relBuild                 = ParserHelper.findOne("<RelBuild>(.*)</RelBuild>", responseString);
+        String whitelistBuild           = ParserHelper.findOne("<WhitelistBuild>(.*)</WhitelistBuild>", responseString);
+        String prodUnit                 = ParserHelper.findOne("<ProdUnit>(.*)</ProdUnit>", responseString);
+        String fuseCfg                  = ParserHelper.findOne("<FuseCfg>(.*)</FuseCfg>", responseString);
+        String revokeFuse               = ParserHelper.findOne("<RevokeFuse>(.*)</RevokeFuse>", responseString);
+        String authFlags                = ParserHelper.findOne("<AuthFlags>(.*)</AuthFlags>", responseString);
+        String swFeatures               = ParserHelper.findOne("<SwFeatures>(.*)</SwFeatures>", responseString);
+        String regState                 = ParserHelper.findOne("<RegState>(.*)</RegState>", responseString);
+        String customerID               = ParserHelper.findOne("<CustomerID>(.*)</CustomerID>", responseString);
 
         return new SonosSpeakerInfo(zoneName, zoneIcon, configuration, localUID, serialNumber, softwareVersion,
                 softwareDate, softwareScm, minCompatibleVersion, legacyCompatibleVersion, hardwareVersion, dspVersion,
