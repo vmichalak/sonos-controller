@@ -1,6 +1,7 @@
 package com.vmichalak.sonoscontroller;
 
 import com.vmichalak.protocol.ssdp.Device;
+import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -36,12 +37,24 @@ public class SonosDevice {
 
     //<editor-fold desc="AV TRANSPORT">
 
-    public void play() throws IOException, UPnPSonosControllerException {
+    /**
+     * Play the currently selected track.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void play() throws IOException, SonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Play",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
-    public void playUri(String uri, String meta) throws IOException, UPnPSonosControllerException {
+    /**
+     * Play a given stream. Pauses the queue.
+     * @param uri URI of a stream to be played.
+     * @param meta The track metadata to show in the player (DIDL format).
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void playUri(String uri, String meta) throws IOException, SonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetAVTransportURI",
                 "<InstanceID>0</InstanceID><CurrentURI>" + uri
                 + "</CurrentURI><CurrentURIMetaData>" + meta + "</CurrentURIMetaData>");
@@ -49,27 +62,47 @@ public class SonosDevice {
         this.play();
     }
 
-    public void pause() throws IOException, UPnPSonosControllerException {
+    /**
+     * Pause the currently playing track.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void pause() throws IOException, SonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Pause",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
-    public void stop() throws IOException, UPnPSonosControllerException {
+    /**
+     * Stop the currently playing track.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void stop() throws IOException, SonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Stop",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
-    public void next() throws IOException, UPnPSonosControllerException {
+    /**
+     * Go to the next track on the queue.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void next() throws IOException, SonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Next",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
-    public void previous() throws IOException, UPnPSonosControllerException {
+    /**
+     * Go back to the previously played track.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void previous() throws IOException, SonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Previous",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
-    public void clearQueue() throws IOException, UPnPSonosControllerException {
+    public void clearQueue() throws IOException, SonosControllerException {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "RemoveAllTracksFromQueue",
                 "<InstanceID>0</InstanceID>");
     }
@@ -78,7 +111,13 @@ public class SonosDevice {
 
     //<editor-fold desc="RENDERING">
 
-    public int getVolume() throws IOException, UPnPSonosControllerException {
+    /**
+     * Get the Sonos speaker volume.
+     * @return A volume value between 0 and 100
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public int getVolume() throws IOException, SonosControllerException {
         String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetVolume",
                 "<InstanceID>0</InstanceID><Channel>Master</Channel>");
 
@@ -89,21 +128,63 @@ public class SonosDevice {
         return Integer.parseInt(matcher.group(1));
     }
 
-    public void setVolume(int volume) throws IOException, UPnPSonosControllerException {
+    /**
+     * Set the Sonos speaker volume.
+     * @param volume A volume value between 0 and 100
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void setVolume(int volume) throws IOException, SonosControllerException {
         this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetVolume",
                 "<InstanceID>0</InstanceID><Channel>Master</Channel><DesiredVolume>" + volume + "</DesiredVolume>");
+    }
+
+    /**
+     * Return the mute state of the Sonos speaker.
+     * @return True if is muted, false if isn't
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public boolean getMute() throws IOException, SonosControllerException {
+        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetMute",
+                "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+        Pattern pattern = Pattern.compile("<CurrentMute>([01])</CurrentMute>");
+        Matcher matcher = pattern.matcher(r);
+        matcher.find();
+        return matcher.group(1).equals("1") ? true : false;
+    }
+
+    /**
+     * Mute or unmute the Sonos speaker.
+     * @param state True to mute, False to unmute
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void setMute(boolean state) throws IOException, SonosControllerException {
+        String s = state ? "1" : "0";
+        this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetMute",
+                "<InstanceID>0</InstanceID><Channel>Master</Channel><DesiredMute>" + s + "</DesiredMute>");
+    }
+
+    /**
+     * Mute or unmute the speaker.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void switchMute() throws IOException, SonosControllerException {
+        setMute(!getMute());
     }
 
     //</editor-fold>
 
     //<editor-fold desc="DEVICE">
 
-    public void setPlayerName(String playerName) throws IOException, UPnPSonosControllerException {
+    public void setPlayerName(String playerName) throws IOException, SonosControllerException {
         this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "SetZoneAttributes",
                 "<DesiredZoneName>" + playerName + "</DesiredZoneName><DesiredIcon /><DesiredConfiguration />");
     }
 
-    public boolean getLedState() throws IOException, UPnPSonosControllerException {
+    public boolean getLedState() throws IOException, SonosControllerException {
         String r = this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "GetLEDState", "");
         Pattern pattern = Pattern.compile("<CurrentLEDState>(.*)</CurrentLEDState>");
         Matcher matcher = pattern.matcher(r);
@@ -111,7 +192,7 @@ public class SonosDevice {
         return matcher.group(1).equals("On") ? true : false;
     }
 
-    public void setLedState(boolean state) throws IOException, UPnPSonosControllerException {
+    public void setLedState(boolean state) throws IOException, SonosControllerException {
         String s = state ? "On" : "Off";
         this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "SetLEDState",
                 "<DesiredLEDState>" + s + "</DesiredLEDState>");
@@ -131,7 +212,7 @@ public class SonosDevice {
      * @return the raw response body returned by the Sonos speaker.
      * @throws IOException
      */
-    private String sendCommand(String endpoint, String service, String action, String body) throws IOException, UPnPSonosControllerException {
+    private String sendCommand(String endpoint, String service, String action, String body) throws IOException, SonosControllerException {
         if(this.httpClient == null) { this.httpClient = HttpClientBuilder.create().build(); }
         String uri = "http://" + this.ip + ":" + SOAP_PORT + endpoint;
         HttpPost request = new HttpPost(uri);
@@ -151,7 +232,7 @@ public class SonosDevice {
         return responseString;
     }
 
-    private void handleError(String response) throws UPnPSonosControllerException {
+    private void handleError(String response) throws SonosControllerException {
         if(!response.contains("errorCode")) { return; }
         Pattern errorCodePattern = Pattern.compile("<errorCode>([0-9]*)</errorCode>");
         Matcher errorCodeMatcher = errorCodePattern.matcher(response);
