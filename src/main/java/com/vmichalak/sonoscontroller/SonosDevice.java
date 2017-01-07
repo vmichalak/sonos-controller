@@ -187,6 +187,18 @@ public class SonosDevice {
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
+    /**
+     * Switch the speaker's input to line-in.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void switchToLineIn() throws IOException, SonosControllerException {
+        //TODO: Test this feature (i only have SONOS Play:1)
+        String uid = this.getSpeakerInfo().getLocalUID();
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetAVTransportURI",
+                "<InstanceID>0</InstanceID><CurrentURI>x-rincon-stream:" + uid + "</CurrentURI><CurrentURIMetaData></CurrentURIMetaData>");
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="RENDERING">
