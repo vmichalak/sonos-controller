@@ -44,9 +44,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void play() throws IOException, SonosControllerException {
-        String r = this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Play",
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Play",
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
-        System.out.println(r);
     }
 
     /**
@@ -60,7 +59,6 @@ public class SonosDevice {
         this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetAVTransportURI",
                 "<InstanceID>0</InstanceID><CurrentURI>" + uri
                 + "</CurrentURI><CurrentURIMetaData>" + meta + "</CurrentURIMetaData>");
-
         this.play();
     }
 
@@ -189,6 +187,18 @@ public class SonosDevice {
                 "<InstanceID>0</InstanceID><Speed>1</Speed>");
     }
 
+    /**
+     * Switch the speaker's input to line-in.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void switchToLineIn() throws IOException, SonosControllerException {
+        //TODO: Test this feature (i only have SONOS Play:1)
+        String uid = this.getSpeakerInfo().getLocalUID();
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetAVTransportURI",
+                "<InstanceID>0</InstanceID><CurrentURI>x-rincon-stream:" + uid + "</CurrentURI><CurrentURIMetaData></CurrentURIMetaData>");
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="RENDERING">
@@ -270,6 +280,30 @@ public class SonosDevice {
     public void setBass(int bass) throws IOException, SonosControllerException {
         this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetBass",
                 "<InstanceID>0</InstanceID><DesiredBass>" + bass + "</DesiredBass>");
+    }
+    
+    /**
+     * Get the Sonos speaker's loudness compensation.
+     * @return True if is On, False if isn't
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public boolean getLoudness() throws IOException, SonosControllerException {
+        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetLoudness", "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+        return ParserHelper.findOne("<CurrentLoudness>([0-9]*)</CurrentLoudness>", r).equals("1") ? true : false;
+    }
+
+    /**
+     * Set the Sonos speaker's loudness compensation.
+     * @param loudness True for set On, False for set Off
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void setLoudness(boolean loudness) throws IOException, SonosControllerException {
+        String value = loudness ? "1" : "0";
+        this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetLoudness",
+                "<InstanceID>0</InstanceID><Channel>Master</Channel><DesiredLoudness>" + value + "</DesiredLoudness>");
+
     }
 
     //</editor-fold>

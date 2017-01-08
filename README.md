@@ -1,3 +1,5 @@
+![Sonos Controller Header](http://blog.vmichalak.com/wp-content/uploads/2017/01/SONOS_controller_header.png)
+
 # sonos-controller
 Java API for controlling [SONOS](http://www.sonos.com/) players.
 
