@@ -249,6 +249,29 @@ public class SonosDevice {
         setMute(!getMute());
     }
 
+    /**
+     * Get the Sonos speaker bass EQ.
+     * @return value between 10 and -10
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public int getBass() throws IOException, SonosControllerException {
+        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetBass",
+                "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+        return Integer.parseInt(ParserHelper.findOne("<CurrentBass>([0-9]*)</CurrentBass>", r));
+    }
+
+    /**
+     * Set the Sonos speaker bass EQ.
+     * @param bass Value between 10 and -10
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void setBass(int bass) throws IOException, SonosControllerException {
+        this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetBass",
+                "<InstanceID>0</InstanceID><DesiredBass>" + bass + "</DesiredBass>");
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="DEVICE">
