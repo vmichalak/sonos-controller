@@ -278,6 +278,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void setBass(int bass) throws IOException, SonosControllerException {
+        if(bass > 10 || bass < -10) { throw new IllegalArgumentException("Bass value need to be between 10 and -10"); }
         this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetBass",
                 "<InstanceID>0</InstanceID><DesiredBass>" + bass + "</DesiredBass>");
     }
@@ -289,7 +290,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public boolean getLoudness() throws IOException, SonosControllerException {
-        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetLoudness", "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetLoudness",
+                "<InstanceID>0</InstanceID><Channel>Master</Channel>");
         return ParserHelper.findOne("<CurrentLoudness>([0-9]*)</CurrentLoudness>", r).equals("1") ? true : false;
     }
 
