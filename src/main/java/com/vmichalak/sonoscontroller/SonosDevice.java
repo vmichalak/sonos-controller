@@ -83,6 +83,17 @@ public class SonosDevice {
     }
 
     /**
+     * Seeks to a given timestamp in the current track, specified in the format HH:MM:SS.
+     * @param time specified in the format HH:MM:SS.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void seek(String time) throws IOException, SonosControllerException {
+        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Seek",
+                "<InstanceID>0</InstanceID><Unit>REL_TIME</Unit><Target>" + time + "</Target>");
+    }
+
+    /**
      * Go to the next track on the queue.
      * @throws IOException
      * @throws SonosControllerException
