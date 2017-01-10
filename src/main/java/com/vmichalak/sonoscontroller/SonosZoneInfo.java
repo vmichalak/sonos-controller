@@ -1,8 +1,5 @@
 package com.vmichalak.sonoscontroller;
 
-import com.vmichalak.protocol.ssdp.Device;
-import com.vmichalak.protocol.ssdp.SSDPClient;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;

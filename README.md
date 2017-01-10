@@ -3,6 +3,8 @@
 # sonos-controller
 Java API for controlling [SONOS](http://www.sonos.com/) players.
 
+[![Travis Build Shield](https://img.shields.io/travis/vmichalak/sonos-controller.svg)](https://travis-ci.org/vmichalak/sonos-controller)
+
 ## Basic Usage
 
 Discovery all Sonos Devices on your network.
