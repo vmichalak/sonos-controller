@@ -303,6 +303,7 @@ public class SonosDevice {
     public boolean getLoudness() throws IOException, SonosControllerException {
         String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetLoudness",
                 "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+        System.out.println(r);
         return ParserHelper.findOne("<CurrentLoudness>([0-9]*)</CurrentLoudness>", r).equals("1") ? true : false;
     }
 
@@ -367,6 +368,16 @@ public class SonosDevice {
 
     //</editor-fold>
 
+    protected String downloadSpeakerInfo() throws IOException, SonosControllerException {
+        if(this.httpClient == null) { this.httpClient = HttpClientBuilder.create().build(); }
+        String uri = "http://" + this.ip + ":" + SOAP_PORT + "/status/zp";
+        HttpGet request = new HttpGet(uri);
+        HttpResponse response = httpClient.execute(request);
+        String responseString = EntityUtils.toString(response.getEntity());
+        handleError(responseString);
+        return responseString;
+    }
+
     /**
      * Get information about the Sonos speaker.
      * @return Information about the Sonos speaker, such as the UID, MAC Address, and Zone Name.
@@ -374,12 +385,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public SonosSpeakerInfo getSpeakerInfo() throws IOException, SonosControllerException {
-        if(this.httpClient == null) { this.httpClient = HttpClientBuilder.create().build(); }
-        String uri = "http://" + this.ip + ":" + SOAP_PORT + "/status/zp";
-        HttpGet request = new HttpGet(uri);
-        HttpResponse response = httpClient.execute(request);
-        String responseString = EntityUtils.toString(response.getEntity());
-        handleError(responseString);
+        String responseString = this.downloadSpeakerInfo();
 
         String zoneName                 = ParserHelper.findOne("<ZoneName>(.*)</ZoneName>", responseString);
         String zoneIcon                 = ParserHelper.findOne("<ZoneIcon>(.*)</ZoneIcon>", responseString);

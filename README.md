@@ -4,7 +4,7 @@
 Java API for controlling [SONOS](http://www.sonos.com/) players.
 
 [![Travis Status](https://img.shields.io/travis/vmichalak/sonos-controller.svg)](https://travis-ci.org/vmichalak/sonos-controller)
-[![Coverage Status](https://coveralls.io/repos/github/vmichalak/sonos-controller/badge.svg)](https://coveralls.io/github/vmichalak/sonos-controller)
+[![Coverage Status](https://coveralls.io/repos/github/vmichalak/sonos-controller/badge.svg?branch=master)](https://coveralls.io/github/vmichalak/sonos-controller?branch=master)
 
 ## Basic Usage
 
