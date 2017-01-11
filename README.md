@@ -3,7 +3,8 @@
 # sonos-controller
 Java API for controlling [SONOS](http://www.sonos.com/) players.
 
-[![Travis Build Shield](https://img.shields.io/travis/vmichalak/sonos-controller.svg)](https://travis-ci.org/vmichalak/sonos-controller)
+[![Travis Status](https://img.shields.io/travis/vmichalak/sonos-controller.svg)](https://travis-ci.org/vmichalak/sonos-controller)
+[![Coverage Status](https://coveralls.io/repos/github/vmichalak/sonos-controller/badge.svg)](https://coveralls.io/github/vmichalak/sonos-controller)
 
 ## Basic Usage
 
@@ -35,6 +36,7 @@ compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , versio
 ## Contributors
 
 The current lead maintainer is [Valentin Michalak] (https://github.com/vmichalak) [(twitter)](https://twitter.com/valmichalak)
+
 Feel free to participate !
 
 ## Special Thanks

@@ -5,3 +5,6 @@ jdk:
 
 install:
   - git clone https://github.com/vmichalak/ssdp-client.git ../ssdp-client
+
+after_success:
+  - ./gradlew cobertura coveralls

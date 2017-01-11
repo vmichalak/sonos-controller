@@ -434,7 +434,7 @@ public class SonosDevice {
      * @return the raw response body returned by the Sonos speaker.
      * @throws IOException
      */
-    private String sendCommand(String endpoint, String service, String action, String body) throws IOException, SonosControllerException {
+    protected String sendCommand(String endpoint, String service, String action, String body) throws IOException, SonosControllerException {
         if(this.httpClient == null) { this.httpClient = HttpClientBuilder.create().build(); }
         String uri = "http://" + this.ip + ":" + SOAP_PORT + endpoint;
         HttpPost request = new HttpPost(uri);
@@ -454,7 +454,7 @@ public class SonosDevice {
         return responseString;
     }
 
-    private void handleError(String response) throws SonosControllerException {
+    protected void handleError(String response) throws SonosControllerException {
         if(!response.contains("errorCode")) { return; }
         int errorCode = Integer.parseInt(ParserHelper.findOne("<errorCode>([0-9]*)</errorCode>", response));
         throw new UPnPSonosControllerException(
