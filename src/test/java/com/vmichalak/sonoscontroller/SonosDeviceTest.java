@@ -67,6 +67,28 @@ public class SonosDeviceTest {
         assertEquals(0, sonosDevice.getBass());
     }
 
+    @Test
+    public void getTreble() throws IOException, SonosControllerException {
+        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand(
+                "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+                        "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
+                        "<u:GetTrebleResponse xmlns:u=\"urn:schemas-upnp-org:service:RenderingControl:1\">" +
+                        "<CurrentTreble>-1</CurrentTreble></u:GetTrebleResponse></s:Body></s:Envelope>");
+        assertEquals(-1, sonosDevice.getTreble());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setInvalidTrebleValue() throws IOException, SonosControllerException {
+        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand("");
+        sonosDevice.setTreble(11);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setInvalidNegativeTrebleValue() throws IOException, SonosControllerException {
+        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand("");
+        sonosDevice.setTreble(-12);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void setInvalidBassValue() throws IOException, SonosControllerException {
         SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand("");

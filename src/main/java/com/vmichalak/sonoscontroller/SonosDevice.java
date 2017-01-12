@@ -279,7 +279,7 @@ public class SonosDevice {
     public int getBass() throws IOException, SonosControllerException {
         String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetBass",
                 "<InstanceID>0</InstanceID><Channel>Master</Channel>");
-        return Integer.parseInt(ParserHelper.findOne("<CurrentBass>([0-9]*)</CurrentBass>", r));
+        return Integer.parseInt(ParserHelper.findOne("<CurrentBass>(.*)</CurrentBass>", r));
     }
 
     /**
@@ -303,8 +303,7 @@ public class SonosDevice {
     public boolean getLoudness() throws IOException, SonosControllerException {
         String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetLoudness",
                 "<InstanceID>0</InstanceID><Channel>Master</Channel>");
-        System.out.println(r);
-        return ParserHelper.findOne("<CurrentLoudness>([0-9]*)</CurrentLoudness>", r).equals("1") ? true : false;
+        return ParserHelper.findOne("<CurrentLoudness>(.*)</CurrentLoudness>", r).equals("1") ? true : false;
     }
 
     /**
@@ -317,7 +316,30 @@ public class SonosDevice {
         String value = loudness ? "1" : "0";
         this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetLoudness",
                 "<InstanceID>0</InstanceID><Channel>Master</Channel><DesiredLoudness>" + value + "</DesiredLoudness>");
+    }
 
+    /**
+     * Get the Sonos speaker's treble EQ.
+     * @return value between -10 and 10
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public int getTreble() throws IOException, SonosControllerException {
+        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetTreble",
+                "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+        return Integer.parseInt(ParserHelper.findOne("<CurrentTreble>(.*)</CurrentTreble>", r));
+    }
+
+    /**
+     * Set the Sonos speaker's treble EQ.
+     * @param treble value between -10 and 10
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void setTreble(int treble) throws IOException, SonosControllerException {
+        if(treble > 10 || treble < -10) { throw new IllegalArgumentException("treble value need to be between 10 and -10"); }
+        this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetTreble",
+                "<InstanceID>0</InstanceID><DesiredTreble>"+treble+"</DesiredTreble>");
     }
 
     //</editor-fold>
