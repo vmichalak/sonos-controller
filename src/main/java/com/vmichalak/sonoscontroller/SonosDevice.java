@@ -13,6 +13,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class SonosDevice {
@@ -27,6 +28,28 @@ public class SonosDevice {
     private final static String CONTENT_DIRECTORY_SERVICE    = "urn:schemas-upnp-org:service:ContentDirectory:1";
     private final static String ZONE_GROUP_TOPOLOGY_ENDPOINT = "/ZoneGroupTopology/Control";
     private final static String ZONE_GROUP_TOPOLOGY_SERVICE  = "urn:upnp-org:serviceId:ZoneGroupTopology";
+
+    private final static HashMap<Integer, String> errorDescriptionMap = new HashMap<Integer, String>() {{
+        put(400, "Bad Request");
+        put(401, "Invalid Action");
+        put(402, "Invalid Args");
+        put(404, "Invalid Var");
+        put(412, "Precondition Failed");
+        put(501, "Action Failed");
+        put(600, "Argument Value Invalid");
+        put(601, "Argument Value Out of Range");
+        put(602, "Option Action Not Implemented");
+        put(603, "Out Of Memory");
+        put(604, "Human Intervention Required");
+        put(605, "String Argument Too Long");
+        put(606, "Action Not Authorized");
+        put(607, "Signature Failure");
+        put(608, "Signature Missing");
+        put(609, "Not Encrypted");
+        put(610, "Invalid Sequence");
+        put(611, "Invalid Control Url");
+        put(612, "No Such Session");
+    }};
 
     private final String ip;
 
@@ -485,9 +508,10 @@ public class SonosDevice {
     protected void handleError(String response) throws SonosControllerException {
         if(!response.contains("errorCode")) { return; }
         int errorCode = Integer.parseInt(ParserHelper.findOne("<errorCode>([0-9]*)</errorCode>", response));
+        String desc = errorDescriptionMap.get(errorCode);
         throw new UPnPSonosControllerException(
-                "UPnP Error " + errorCode +" received from " + this.ip,
-                errorCode, "", response);
+                "UPnP Error " + errorCode +" (" + desc + ") received from " + this.ip,
+                errorCode, desc, response);
     }
 
     @Override
