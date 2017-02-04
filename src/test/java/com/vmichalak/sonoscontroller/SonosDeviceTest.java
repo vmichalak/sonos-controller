@@ -236,6 +236,31 @@ public class SonosDeviceTest {
         assertEquals("111111111",                                       speakerInfo.getCustomerID());
     }
 
+    @Test
+    /**
+     * Issue #1 - Danish Zone Name Parsing Problem
+     */
+    public void getDanishZoneName() throws IOException, SonosControllerException {
+        Mockito.mock(SonosDevice.class);
+        SonosDevice sonosDevice = Mockito.spy(new SonosDevice("127.0.0.1"));
+        Mockito.doReturn("<?xml version=\"1.0\" ?>\n" +
+                "<?xml-stylesheet type=\"text/xsl\" href=\"/xml/review.xsl\"?><ZPSupportInfo><ZPInfo>" +
+                "<ZoneName>0. KÃ¸kken</ZoneName><ZoneIcon>x-rincon-roomicon:kitchen</ZoneIcon>" +
+                "<Configuration>1</Configuration><LocalUID>RINCON_B8E937568F5A01400</LocalUID>" +
+                "<SerialNumber>XX-XX-XX-XX-XX-XX:0</SerialNumber><SoftwareVersion>35.3-37210</SoftwareVersion>" +
+                "<SoftwareDate>2017-01-21 22:51:23.323408</SoftwareDate><SoftwareScm>296936</SoftwareScm>" +
+                "<MinCompatibleVersion>34.0-00000</MinCompatibleVersion>" +
+                "<LegacyCompatibleVersion>25.0-00000</LegacyCompatibleVersion>" +
+                "<HardwareVersion>1.8.3.7-2</HardwareVersion><DspVersion>0.25.3</DspVersion><HwFlags>0x0</HwFlags>" +
+                "<HwFeatures>0x0</HwFeatures><Variant>0</Variant><GeneralFlags>0x0</GeneralFlags>" +
+                "<IPAddress>192.168.10.110</IPAddress><MACAddress>XX-XX-XX-XX-XX-XX</MACAddress>" +
+                "<Copyright>Â© 2003-2017, Sonos, Inc. All rights reserved.</Copyright>" +
+                "<ExtraInfo>OTP: </ExtraInfo><HTAudioInCode>0</HTAudioInCode><IdxTrk></IdxTrk><MDP2Ver>0</MDP2Ver>" +
+                "<MDP3Ver>0</MDP3Ver><RegState>3</RegState><CustomerID>XXXX</CustomerID>" +
+                "</ZPInfo></ZPSupportInfo>").when(sonosDevice).downloadSpeakerInfo();
+
+        assertEquals("0. KÃ¸kken", sonosDevice.getZoneName());
+    }
 
     @Test(expected = UPnPSonosControllerException.class)
     public void errorParsing() throws IOException, SonosControllerException {
