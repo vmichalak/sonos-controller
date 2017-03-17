@@ -35,7 +35,7 @@ compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , versio
 
 ## Contributors
 
-The current lead maintainer is [Valentin Michalak] (https://github.com/vmichalak) [(twitter)](https://twitter.com/valmichalak)
+The current lead maintainer is [Valentin Michalak](https://github.com/vmichalak) [(twitter)](https://twitter.com/valmichalak)
 
 Feel free to participate !
 
