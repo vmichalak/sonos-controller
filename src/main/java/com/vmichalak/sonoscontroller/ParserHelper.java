@@ -5,6 +5,9 @@ import java.util.regex.Pattern;
 
 class ParserHelper {
 
+    // Hide the implicit public constructor.
+    private ParserHelper() { }
+
     /**
      * Return the first find occurrence of a regex match.
      * @param regex pattern regex

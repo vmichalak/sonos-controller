@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SonosDiscovery {
+
+    // Hide the implicit public constructor.
+    private SonosDiscovery() { }
+
     /**
      * Discover all SONOS speakers on network using SSDP (Simple Service Discovery Protocol).
      * @return List of SONOS speakers
