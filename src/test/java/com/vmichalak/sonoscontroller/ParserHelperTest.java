@@ -2,11 +2,11 @@ package com.vmichalak.sonoscontroller;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 
-/*
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
 public class ParserHelperTest {
 
     @Test
@@ -26,6 +26,4 @@ public class ParserHelperTest {
 
         assertEquals("Computer", ParserHelper.findOne("<genre>(.*)</genre>", xml));
     }
-
 }
-*/
