@@ -146,6 +146,23 @@ public class SonosDeviceTest {
     }
 
     @Test
+    public void isNightModeActivated() throws Exception {
+        String data = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"" +
+                "http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:GetEQResponse xmlns:u=" +
+                "\"urn:schemas-upnp-org:service:RenderingControl:1\"><CurrentValue>0</CurrentValue>" +
+                "</u:GetEQResponse></s:Body></s:Envelope>\n";
+        MockHelper.mockCommandBuilder(data);
+        assertEquals(false, new SonosDevice("127.0.0.1").isNightModeActivated());
+
+        data = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"" +
+                "http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:GetEQResponse xmlns:u=" +
+                "\"urn:schemas-upnp-org:service:RenderingControl:1\"><CurrentValue>1</CurrentValue>" +
+                "</u:GetEQResponse></s:Body></s:Envelope>\n";
+        MockHelper.mockCommandBuilder(data);
+        assertEquals(true, new SonosDevice("127.0.0.1").isNightModeActivated());
+    }
+
+    @Test
     public void getLedStateTrue() throws Exception {
         String data = "<?xml version=\"1.0\"?>" +
                 "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\""+
