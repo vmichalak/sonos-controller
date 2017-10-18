@@ -1,59 +1,14 @@
 package com.vmichalak.sonoscontroller;
 
 import com.vmichalak.sonoscontroller.exception.SonosControllerException;
-import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class SonosDevice {
-    private final static int    SOAP_PORT                    = 1400;
-    private final static String TRANSPORT_ENDPOINT           = "/MediaRenderer/AVTransport/Control";
-    private final static String TRANSPORT_SERVICE            = "urn:schemas-upnp-org:service:AVTransport:1";
-    private final static String RENDERING_ENDPOINT           = "/MediaRenderer/RenderingControl/Control";
-    private final static String RENDERING_SERVICE            = "urn:schemas-upnp-org:service:RenderingControl:1";
-    private final static String DEVICE_ENDPOINT              = "/DeviceProperties/Control";
-    private final static String DEVICE_SERVICE               = "urn:schemas-upnp-org:service:DeviceProperties:1";
-    private final static String CONTENT_DIRECTORY_ENDPOINT   = "/MediaServer/ContentDirectory/Control";
-    private final static String CONTENT_DIRECTORY_SERVICE    = "urn:schemas-upnp-org:service:ContentDirectory:1";
-    private final static String ZONE_GROUP_TOPOLOGY_ENDPOINT = "/ZoneGroupTopology/Control";
-    private final static String ZONE_GROUP_TOPOLOGY_SERVICE  = "urn:upnp-org:serviceId:ZoneGroupTopology";
-
-    private final static HashMap<Integer, String> errorDescriptionMap = new HashMap<Integer, String>() {{
-        put(400, "Bad Request");
-        put(401, "Invalid Action");
-        put(402, "Invalid Args");
-        put(404, "Invalid Var");
-        put(412, "Precondition Failed");
-        put(501, "Action Failed");
-        put(600, "Argument Value Invalid");
-        put(601, "Argument Value Out of Range");
-        put(602, "Option Action Not Implemented");
-        put(603, "Out Of Memory");
-        put(604, "Human Intervention Required");
-        put(605, "String Argument Too Long");
-        put(606, "Action Not Authorized");
-        put(607, "Signature Failure");
-        put(608, "Signature Missing");
-        put(609, "Not Encrypted");
-        put(610, "Invalid Sequence");
-        put(611, "Invalid Control Url");
-        put(612, "No Such Session");
-    }};
 
     private final String ip;
-
-    private HttpClient httpClient;
 
     public SonosDevice(String ip) {
         this.ip = ip;
@@ -67,8 +22,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void play() throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Play",
-                "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        CommandBuilder.transport("Play").put("InstanceID", "0").put("Speed", "1").executeOn(this.ip);
     }
 
     /**
@@ -79,9 +33,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void playUri(String uri, String meta) throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetAVTransportURI",
-                "<InstanceID>0</InstanceID><CurrentURI>" + uri
-                + "</CurrentURI><CurrentURIMetaData>" + meta + "</CurrentURIMetaData>");
+        CommandBuilder.transport("SetAVTransportURI").put("InstanceID", "0").put("CurrentURI", uri)
+                .put("CurrentURIMetaData", meta).executeOn(this.ip);
         this.play();
     }
 
@@ -91,8 +44,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void pause() throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Pause",
-                "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        CommandBuilder.transport("Pause").put("InstanceID", "0").put("Speed", "1").executeOn(this.ip);
     }
 
     /**
@@ -101,8 +53,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void stop() throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Stop",
-                "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        CommandBuilder.transport("Stop").put("InstanceID", "0").put("Speed", "1").executeOn(this.ip);
     }
 
     /**
@@ -112,8 +63,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void seek(String time) throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Seek",
-                "<InstanceID>0</InstanceID><Unit>REL_TIME</Unit><Target>" + time + "</Target>");
+        CommandBuilder.transport("Seek").put("InstanceID", "0").put("Unit", "REL_TIME").put("Target", time)
+                .executeOn(this.ip);
     }
 
     /**
@@ -122,8 +73,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void next() throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Next",
-                "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        CommandBuilder.transport("Next").put("InstanceID", "0").put("Speed", "1").executeOn(this.ip);
     }
 
     /**
@@ -132,8 +82,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void previous() throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "Previous",
-                "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        CommandBuilder.transport("Previous").put("InstanceID", "0").put("Speed", "1").executeOn(this.ip);
     }
 
     /**
@@ -143,8 +92,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public PlayMode getPlayMode() throws IOException, SonosControllerException {
-        String r = this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "GetTransportSettings",
-                "<InstanceID>0</InstanceID>");
+        String r = CommandBuilder.transport("GetTransportSettings").put("InstanceID", "0").executeOn(this.ip);
         return PlayMode.valueOf(ParserHelper.findOne("<PlayMode>(.*)</PlayMode>", r));
     }
 
@@ -155,8 +103,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void setPlayMode(PlayMode playMode) throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetPlayMode",
-                "<InstanceID>0</InstanceID><NewPlayMode>" + playMode + "</NewPlayMode>");
+        CommandBuilder.transport("SetPlayMode").put("InstanceID", "0").put("NewPlayMode", playMode.toString())
+                .executeOn(this.ip);
     }
 
     /**
@@ -165,8 +113,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void clearQueue() throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "RemoveAllTracksFromQueue",
-                "<InstanceID>0</InstanceID>");
+        CommandBuilder.transport("RemoveAllTracksFromQueue").put("InstanceID", "0").executeOn(this.ip);
     }
 
     /**
@@ -206,9 +153,9 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void join(String masterUID) throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetAVTransportURI",
-                "<InstanceID>0</InstanceID><CurrentURI>x-rincon:" + masterUID +
-                "</CurrentURI><CurrentURIMetaData></CurrentURIMetaData>");
+        CommandBuilder.transport("SetAVTransportURI")
+                .put("InstanceID", "0").put("CurrentURI", "x-rincon:" + masterUID).put("CurrentURIMetaData", "")
+                .executeOn(this.ip);
     }
 
     /**
@@ -217,8 +164,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void unjoin() throws IOException, SonosControllerException {
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "BecomeCoordinatorOfStandaloneGroup",
-                "<InstanceID>0</InstanceID><Speed>1</Speed>");
+        CommandBuilder.transport("BecomeCoordinatorOfStandaloneGroup")
+                .put("InstanceID", "0").put("Speed", "1").executeOn(this.ip);
     }
 
     /**
@@ -228,8 +175,8 @@ public class SonosDevice {
      */
     public void switchToLineIn() throws IOException, SonosControllerException {
         String uid = this.getSpeakerInfo().getLocalUID();
-        this.sendCommand(TRANSPORT_ENDPOINT, TRANSPORT_SERVICE, "SetAVTransportURI",
-                "<InstanceID>0</InstanceID><CurrentURI>x-rincon-stream:" + uid + "</CurrentURI><CurrentURIMetaData></CurrentURIMetaData>");
+        CommandBuilder.transport("SetAVTransportURI").put("InstanceID", "0")
+                .put("CurrentURI", "x-rincon-stream:" + uid).put("CurrentURIMetaData", "").executeOn(this.ip);
     }
 
     //</editor-fold>
@@ -243,8 +190,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public int getVolume() throws IOException, SonosControllerException {
-        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetVolume",
-                "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+        String r = CommandBuilder.rendering("GetVolume").put("InstanceID", "0").put("Channel", "Master")
+                .executeOn(this.ip);
         return Integer.parseInt(ParserHelper.findOne("<CurrentVolume>([0-9]*)</CurrentVolume>", r));
     }
 
@@ -255,8 +202,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void setVolume(int volume) throws IOException, SonosControllerException {
-        this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetVolume",
-                "<InstanceID>0</InstanceID><Channel>Master</Channel><DesiredVolume>" + volume + "</DesiredVolume>");
+        CommandBuilder.rendering("SetVolume").put("InstanceID", "0").put("Channel", "Master")
+                .put("DesiredVolume", String.valueOf(volume)).executeOn(this.ip);
     }
 
     /**
@@ -265,9 +212,9 @@ public class SonosDevice {
      * @throws IOException
      * @throws SonosControllerException
      */
-    public boolean getMute() throws IOException, SonosControllerException {
-        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetMute",
-                "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+    public boolean isMuted() throws IOException, SonosControllerException {
+        String r = CommandBuilder.rendering("GetMute").put("InstanceID", "0").put("Channel", "Master")
+                .executeOn(this.ip);
         return ParserHelper.findOne("<CurrentMute>([01])</CurrentMute>", r).equals("1") ? true : false;
     }
 
@@ -278,9 +225,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void setMute(boolean state) throws IOException, SonosControllerException {
-        String s = state ? "1" : "0";
-        this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetMute",
-                "<InstanceID>0</InstanceID><Channel>Master</Channel><DesiredMute>" + s + "</DesiredMute>");
+        CommandBuilder.rendering("SetMute").put("InstanceID", "0").put("Channel", "Master")
+                .put("DesiredMute", state ? "1" : "0").executeOn(this.ip);
     }
 
     /**
@@ -289,7 +235,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void switchMute() throws IOException, SonosControllerException {
-        setMute(!getMute());
+        setMute(!isMuted());
     }
 
     /**
@@ -299,8 +245,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public int getBass() throws IOException, SonosControllerException {
-        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetBass",
-                "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+        String r = CommandBuilder.rendering("GetBass").put("InstanceID", "0").put("Channel", "Master")
+                .executeOn(this.ip);
         return Integer.parseInt(ParserHelper.findOne("<CurrentBass>(.*)</CurrentBass>", r));
     }
 
@@ -312,8 +258,8 @@ public class SonosDevice {
      */
     public void setBass(int bass) throws IOException, SonosControllerException {
         if(bass > 10 || bass < -10) { throw new IllegalArgumentException("Bass value need to be between 10 and -10"); }
-        this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetBass",
-                "<InstanceID>0</InstanceID><DesiredBass>" + bass + "</DesiredBass>");
+        CommandBuilder.rendering("SetBass").put("InstanceID", "0").put("DesiredBass", String.valueOf(bass))
+                .executeOn(this.ip);
     }
     
     /**
@@ -322,9 +268,9 @@ public class SonosDevice {
      * @throws IOException
      * @throws SonosControllerException
      */
-    public boolean getLoudness() throws IOException, SonosControllerException {
-        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetLoudness",
-                "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+    public boolean isLoudnessActivated() throws IOException, SonosControllerException {
+        String r = CommandBuilder.rendering("GetLoudness").put("InstanceID", "0").put("Channel", "Master")
+                .executeOn(this.ip);
         return ParserHelper.findOne("<CurrentLoudness>(.*)</CurrentLoudness>", r).equals("1") ? true : false;
     }
 
@@ -335,9 +281,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void setLoudness(boolean loudness) throws IOException, SonosControllerException {
-        String value = loudness ? "1" : "0";
-        this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetLoudness",
-                "<InstanceID>0</InstanceID><Channel>Master</Channel><DesiredLoudness>" + value + "</DesiredLoudness>");
+        CommandBuilder.rendering("SetLoudness").put("InstanceID", "0").put("Channel", "Master")
+                .put("DesiredLoudness", loudness ? "1" : "0").executeOn(this.ip);
     }
 
     /**
@@ -347,8 +292,8 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public int getTreble() throws IOException, SonosControllerException {
-        String r = this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "GetTreble",
-                "<InstanceID>0</InstanceID><Channel>Master</Channel>");
+        String r = CommandBuilder.rendering("GetTreble").put("InstanceID", "0").put("Channel", "Master")
+                .executeOn(this.ip);
         return Integer.parseInt(ParserHelper.findOne("<CurrentTreble>(.*)</CurrentTreble>", r));
     }
 
@@ -360,8 +305,42 @@ public class SonosDevice {
      */
     public void setTreble(int treble) throws IOException, SonosControllerException {
         if(treble > 10 || treble < -10) { throw new IllegalArgumentException("treble value need to be between 10 and -10"); }
-        this.sendCommand(RENDERING_ENDPOINT, RENDERING_SERVICE, "SetTreble",
-                "<InstanceID>0</InstanceID><DesiredTreble>"+treble+"</DesiredTreble>");
+        CommandBuilder.rendering("SetTreble").put("InstanceID", "0").put("DesiredTreble", String.valueOf(treble))
+                .executeOn(this.ip);
+    }
+
+    /**
+     * Check if the Night Mode is activated or not.
+     * /!\ WARNING: WORKS ONLY WITH PLAYBAR / PLAYBASE /!\
+     * @return True if activated, False if isn't.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public boolean isNightModeActivated() throws IOException, SonosControllerException {
+        String s = CommandBuilder.rendering("GetEQ").put("InstanceID", "0").put("EQType", "NightMode")
+                .executeOn(this.ip);
+        return ParserHelper.findOne("<CurrentValue>(.*)</CurrentValue>", s).equals("1") ? true : false;
+    }
+
+    /**
+     * Set the Night Mode.
+     * /!\ WARNING: WORKS ONLY WITH PLAYBAR / PLAYBASE /!\
+     * @param state
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void setNightMode(boolean state) throws IOException, SonosControllerException {
+        CommandBuilder.rendering("SetEQ").put("InstanceID", "0").put("EQType", "NightMode")
+                .put("DesiredValue", state ? "1" : "0").executeOn(this.ip);
+    }
+
+    /**
+     * Turn On / Off the Night Mode.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void switchNightMode() throws IOException, SonosControllerException {
+        this.setNightMode(!this.isNightModeActivated());
     }
 
     //</editor-fold>
@@ -373,19 +352,17 @@ public class SonosDevice {
     }
 
     public void setZoneName(String zoneName) throws IOException, SonosControllerException {
-        this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "SetZoneAttributes",
-                "<DesiredZoneName>" + zoneName + "</DesiredZoneName><DesiredIcon /><DesiredConfiguration />");
+        CommandBuilder.device("SetZoneAttributes").put("DesiredZoneName", zoneName).put("DesiredIcon", "")
+                .put("DesiredConfiguration", "").executeOn(this.ip);
     }
 
     public boolean getLedState() throws IOException, SonosControllerException {
-        String r = this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "GetLEDState", "");
+        String r = CommandBuilder.device("GetLEDState").executeOn(this.ip);
         return ParserHelper.findOne("<CurrentLEDState>(.*)</CurrentLEDState>", r).equals("On") ? true : false;
     }
 
     public void setLedState(boolean state) throws IOException, SonosControllerException {
-        String s = state ? "On" : "Off";
-        this.sendCommand(DEVICE_ENDPOINT, DEVICE_SERVICE, "SetLEDState",
-                "<DesiredLEDState>" + s + "</DesiredLEDState>");
+        CommandBuilder.device("SetLEDState").put("DesiredLEDState", state ? "On" : "Off").executeOn(this.ip);
     }
 
     public void switchLedState() throws IOException, SonosControllerException {
@@ -401,8 +378,7 @@ public class SonosDevice {
     //<editor-fold desc="ZONE GROUP TOPOLOGY">
 
     public SonosZoneInfo getZoneGroupState() throws IOException, SonosControllerException {
-        String r = this.sendCommand(ZONE_GROUP_TOPOLOGY_ENDPOINT, ZONE_GROUP_TOPOLOGY_SERVICE, "GetZoneGroupAttributes",
-                "");
+        String r = CommandBuilder.zoneGroupTopology("GetZoneGroupAttributes").executeOn(this.ip);
         String name = ParserHelper.findOne("<CurrentZoneGroupName>(.*)</CurrentZoneGroupName>", r);
         String id = ParserHelper.findOne("<CurrentZoneGroupID>(.*)</CurrentZoneGroupID>", r);
         String devices = ParserHelper.findOne("<CurrentZonePlayerUUIDsInGroup>(.*)</CurrentZonePlayerUUIDsInGroup>", r);
@@ -412,16 +388,6 @@ public class SonosDevice {
 
     //</editor-fold>
 
-    protected String downloadSpeakerInfo() throws IOException, SonosControllerException {
-        if(this.httpClient == null) { this.httpClient = HttpClientBuilder.create().build(); }
-        String uri = "http://" + this.ip + ":" + SOAP_PORT + "/status/zp";
-        HttpGet request = new HttpGet(uri);
-        HttpResponse response = httpClient.execute(request);
-        String responseString = EntityUtils.toString(response.getEntity());
-        handleError(responseString);
-        return responseString;
-    }
-
     /**
      * Get information about the Sonos speaker.
      * @return Information about the Sonos speaker, such as the UID, MAC Address, and Zone Name.
@@ -429,7 +395,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public SonosSpeakerInfo getSpeakerInfo() throws IOException, SonosControllerException {
-        String responseString = this.downloadSpeakerInfo();
+        String responseString = CommandBuilder.downloadSpeakerInfo(this.ip);
 
         String zoneName                 = ParserHelper.findOne("<ZoneName>(.*)</ZoneName>", responseString);
         String zoneIcon                 = ParserHelper.findOne("<ZoneIcon>(.*)</ZoneIcon>", responseString);
@@ -474,43 +440,6 @@ public class SonosDevice {
                 hwFlags, hwFeatures, variant, generalFlags, ipAddress, macAddress, copyright, extraInfo, htAudioInCode,
                 idxTrk, mdp2Ver, mdp3Ver, relBuild, whitelistBuild, prodUnit, fuseCfg, revokeFuse, authFlags,
                 swFeatures, regState, customerID);
-    }
-
-    /**
-     * Send a raw command to the Sonos speaker.
-     * @param endpoint
-     * @param action
-     * @param body
-     * @return the raw response body returned by the Sonos speaker.
-     * @throws IOException
-     */
-    protected String sendCommand(String endpoint, String service, String action, String body) throws IOException, SonosControllerException {
-        if(this.httpClient == null) { this.httpClient = HttpClientBuilder.create().build(); }
-        String uri = "http://" + this.ip + ":" + SOAP_PORT + endpoint;
-        HttpPost request = new HttpPost(uri);
-        request.setHeader("Content-Type", "text/xml");
-        request.setHeader("SOAPACTION", service + "#" + action);
-        String content = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\""
-                        + " s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>"
-                        + "<u:" + action + " xmlns:u=\"" + service + "\">"
-                        + body
-                        + "</u:" + action + ">"
-                        + "</s:Body></s:Envelope>";
-        HttpEntity entity = new ByteArrayEntity(content.getBytes("UTF-8"));
-        request.setEntity(entity);
-        HttpResponse response = httpClient.execute(request);
-        String responseString = EntityUtils.toString(response.getEntity());
-        handleError(responseString);
-        return responseString;
-    }
-
-    protected void handleError(String response) throws SonosControllerException {
-        if(!response.contains("errorCode")) { return; }
-        int errorCode = Integer.parseInt(ParserHelper.findOne("<errorCode>([0-9]*)</errorCode>", response));
-        String desc = errorDescriptionMap.get(errorCode);
-        throw new UPnPSonosControllerException(
-                "UPnP Error " + errorCode +" (" + desc + ") received from " + this.ip,
-                errorCode, desc, response);
     }
 
     @Override

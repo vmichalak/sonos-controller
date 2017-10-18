@@ -4,8 +4,8 @@ import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,122 +13,122 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({CommandBuilder.class, SonosDevice.class})
 public class SonosDeviceTest {
 
     @Test
-    public void getPlayMode() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand(
-                "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-                        "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
-                        "<u:GetTransportSettingsResponse xmlns:u=\"urn:schemas-upnp-org:service:AVTransport:1\">" +
-                        "<PlayMode>NORMAL</PlayMode><RecQualityMode>NOT_IMPLEMENTED</RecQualityMode>" +
-                        "</u:GetTransportSettingsResponse></s:Body></s:Envelope>\n");
-        assertEquals(PlayMode.NORMAL, sonosDevice.getPlayMode());
+    public void getPlayMode() throws Exception {
+        MockHelper.mockCommandBuilder("<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+                "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
+                "<u:GetTransportSettingsResponse xmlns:u=\"urn:schemas-upnp-org:service:AVTransport:1\">" +
+                "<PlayMode>NORMAL</PlayMode><RecQualityMode>NOT_IMPLEMENTED</RecQualityMode>" +
+                "</u:GetTransportSettingsResponse></s:Body></s:Envelope>\n");
+        assertEquals(PlayMode.NORMAL, new SonosDevice("127.0.0.1").getPlayMode());
     }
 
     @Test
-    public void getVolume() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand(
+    public void getVolume() throws Exception {
+        MockHelper.mockCommandBuilder(
                 "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
                         "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
                         "<u:GetVolumeResponse xmlns:u=\"urn:schemas-upnp-org:service:RenderingControl:1\">" +
                         "<CurrentVolume>18</CurrentVolume></u:GetVolumeResponse></s:Body></s:Envelope>\n");
-        assertEquals(18, sonosDevice.getVolume());
+        assertEquals(18, new SonosDevice("127.0.0.1").getVolume());
     }
 
     @Test
-    public void getMuteFalse() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand(
+    public void getMuteFalse() throws Exception {
+        MockHelper.mockCommandBuilder(
                 "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
                         "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
                         "<u:GetMuteResponse xmlns:u=\"urn:schemas-upnp-org:service:RenderingControl:1\">" +
                         "<CurrentMute>0</CurrentMute></u:GetMuteResponse></s:Body></s:Envelope>\n");
-        assertEquals(false, sonosDevice.getMute());
+        assertEquals(false, new SonosDevice("127.0.0.1").isMuted());
     }
 
     @Test
-    public void getMuteTrue() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand(
+    public void getMuteTrue() throws Exception {
+        MockHelper.mockCommandBuilder(
                 "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
                         "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
                         "<u:GetMuteResponse xmlns:u=\"urn:schemas-upnp-org:service:RenderingControl:1\">" +
                         "<CurrentMute>1</CurrentMute></u:GetMuteResponse></s:Body></s:Envelope>\n");
-        assertEquals(true, sonosDevice.getMute());
+        assertEquals(true, new SonosDevice("127.0.0.1").isMuted());
     }
 
     @Test
-    public void getBass() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand("" +
+    public void getBass() throws Exception {
+        MockHelper.mockCommandBuilder("" +
                 "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
                 "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
                 "<u:GetBassResponse xmlns:u=\"urn:schemas-upnp-org:service:RenderingControl:1\">" +
                 "<CurrentBass>0</CurrentBass></u:GetBassResponse></s:Body></s:Envelope>\n");
-        assertEquals(0, sonosDevice.getBass());
+        assertEquals(0, new SonosDevice("127.0.0.1").getBass());
     }
 
     @Test
-    public void getTreble() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand(
+    public void getTreble() throws Exception {
+        MockHelper.mockCommandBuilder(
                 "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
                         "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
                         "<u:GetTrebleResponse xmlns:u=\"urn:schemas-upnp-org:service:RenderingControl:1\">" +
                         "<CurrentTreble>-1</CurrentTreble></u:GetTrebleResponse></s:Body></s:Envelope>");
-        assertEquals(-1, sonosDevice.getTreble());
+        assertEquals(-1, new SonosDevice("127.0.0.1").getTreble());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setInvalidTrebleValue() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand("");
-        sonosDevice.setTreble(11);
+    public void setInvalidTrebleValue() throws Exception {
+        MockHelper.mockCommandBuilder("");
+        new SonosDevice("127.0.0.1").setTreble(11);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setInvalidNegativeTrebleValue() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand("");
-        sonosDevice.setTreble(-12);
+    public void setInvalidNegativeTrebleValue() throws Exception {
+        MockHelper.mockCommandBuilder("");
+        new SonosDevice("127.0.0.1").setTreble(-12);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setInvalidBassValue() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand("");
-        sonosDevice.setBass(11);
+    public void setInvalidBassValue() throws Exception {
+        MockHelper.mockCommandBuilder("");
+        new SonosDevice("127.0.0.1").setBass(11);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setInvalidNegativeBassValue() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand("");
-        sonosDevice.setBass(-12);
+    public void setInvalidNegativeBassValue() throws Exception {
+        MockHelper.mockCommandBuilder("");
+        new SonosDevice("127.0.0.1").setBass(-12);
     }
 
     @Test
-    public void setValidBassValue() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand("");
-        sonosDevice.setBass(0);
+    public void setValidBassValue() throws Exception {
+        MockHelper.mockCommandBuilder("");
+        new SonosDevice("127.0.0.1").setBass(0);
     }
 
     @Test
-    public void getLoudnessFalse() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand(
+    public void getLoudnessFalse() throws Exception {
+        MockHelper.mockCommandBuilder(
                 "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
                         "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
                         "<u:GetLoudnessResponse xmlns:u=\"urn:schemas-upnp-org:service:RenderingControl:1\">" +
                         "<CurrentLoudness>0</CurrentLoudness></u:GetLoudnessResponse></s:Body></s:Envelope>\n");
-        assertEquals(false, sonosDevice.getLoudness());
+        assertEquals(false, new SonosDevice("127.0.0.1").isLoudnessActivated());
     }
 
     @Test
-    public void getLoudnessTrue() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand(
+    public void getLoudnessTrue() throws Exception {
+        MockHelper.mockCommandBuilder(
                 "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
                         "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
                         "<u:GetLoudnessResponse xmlns:u=\"urn:schemas-upnp-org:service:RenderingControl:1\">" +
                         "<CurrentLoudness>1</CurrentLoudness></u:GetLoudnessResponse></s:Body></s:Envelope>\n");
-        assertEquals(true, sonosDevice.getLoudness());
+        assertEquals(true, new SonosDevice("127.0.0.1").isLoudnessActivated());
     }
 
     @Test
-    public void getLedStateFalse() throws IOException, SonosControllerException {
+    public void getLedStateFalse() throws Exception {
         String data = "<?xml version=\"1.0\"?>" +
                 "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\""+
                 " s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"+
@@ -141,12 +141,12 @@ public class SonosDeviceTest {
                 "</s:Body>"+
                 "</s:Envelope>";
         
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand(data);
-        assertEquals(false, sonosDevice.getLedState());
+        MockHelper.mockCommandBuilder(data);
+        assertEquals(false, new SonosDevice("127.0.0.1").getLedState());
     }
 
     @Test
-    public void getLedStateTrue() throws IOException, SonosControllerException {
+    public void getLedStateTrue() throws Exception {
         String data = "<?xml version=\"1.0\"?>" +
                 "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\""+
                 " s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"+
@@ -159,17 +159,17 @@ public class SonosDeviceTest {
                 "</s:Body>"+
                 "</s:Envelope>";
 
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand(data);
-        assertEquals(true, sonosDevice.getLedState());
+        MockHelper.mockCommandBuilder(data);
+        assertEquals(true, new SonosDevice("127.0.0.1").getLedState());
     }
 
     @Test
-    public void getZoneGroupState() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = MockHelper.mockSonosDeviceSendCommand(
+    public void getZoneGroupState() throws Exception {
+        MockHelper.mockCommandBuilder(
                 "<CurrentZoneGroupName>Salon</CurrentZoneGroupName>" +
                 "<CurrentZoneGroupID>X</CurrentZoneGroupID>" +
                 "<CurrentZonePlayerUUIDsInGroup>A,B,X</CurrentZonePlayerUUIDsInGroup>"); //TODO: Add True Data
-        SonosZoneInfo zoneInfo = sonosDevice.getZoneGroupState();
+        SonosZoneInfo zoneInfo = new SonosDevice("127.0.0.1").getZoneGroupState();
         assertEquals("X", zoneInfo.getId());
         assertEquals("Salon", zoneInfo.getName());
         List<String> inGroup = new ArrayList<String>();
@@ -179,11 +179,11 @@ public class SonosDeviceTest {
         assertEquals(inGroup, zoneInfo.getZonePlayerUIDInGroup());
     }
 
+
     @Test
-    public void getSpeakerInfo() throws IOException, SonosControllerException {
-        Mockito.mock(SonosDevice.class);
-        SonosDevice sonosDevice = Mockito.spy(new SonosDevice("127.0.0.1"));
-        Mockito.doReturn("<?xml-stylesheet type=\"text/xsl\" href=\"/xml/review.xsl\"?><ZPSupportInfo><ZPInfo><ZoneName>" +
+    public void getSpeakerInfo() throws Exception {
+        MockHelper.mockCommandBuilderDownloadSpeakerInfo(
+                "<?xml-stylesheet type=\"text/xsl\" href=\"/xml/review.xsl\"?><ZPSupportInfo><ZPInfo><ZoneName>" +
                 "Bedroom</ZoneName><ZoneIcon>x-rincon-roomicon:den</ZoneIcon><Configuration>1</Configuration>" +
                 "<LocalUID>RINCON_99999999AAAAAAAAA</LocalUID><SerialNumber>99-99-99-99-99-99:3</SerialNumber>" +
                 "<SoftwareVersion>34.7-35162c</SoftwareVersion><SoftwareDate>2016-12-01 18:24:56.626597</SoftwareDate>" +
@@ -198,9 +198,9 @@ public class SonosDeviceTest {
                 "<MDP3Ver>2</MDP3Ver><RelBuild>1</RelBuild><WhitelistBuild>0x0</WhitelistBuild><ProdUnit>1</ProdUnit>" +
                 "<FuseCfg>OK</FuseCfg><RevokeFuse>0x1</RevokeFuse><AuthFlags>0x0</AuthFlags>" +
                 "<SwFeatures>0x0</SwFeatures><RegState>3</RegState><CustomerID>111111111</CustomerID>" +
-                "</ZPInfo></ZPSupportInfo>").when(sonosDevice).downloadSpeakerInfo();
+                "</ZPInfo></ZPSupportInfo>");
 
-        SonosSpeakerInfo speakerInfo = sonosDevice.getSpeakerInfo();
+        SonosSpeakerInfo speakerInfo = new SonosDevice("127.0.0.1").getSpeakerInfo();
         assertEquals("Bedroom",                                         speakerInfo.getZoneName());
         assertEquals("x-rincon-roomicon:den",                           speakerInfo.getZoneIcon());
         assertEquals("1",                                               speakerInfo.getConfiguration());
@@ -240,10 +240,8 @@ public class SonosDeviceTest {
     /**
      * Issue #1 - Danish Zone Name Parsing Problem
      */
-    public void getDanishZoneName() throws IOException, SonosControllerException {
-        Mockito.mock(SonosDevice.class);
-        SonosDevice sonosDevice = Mockito.spy(new SonosDevice("127.0.0.1"));
-        Mockito.doReturn("<?xml version=\"1.0\" ?>\n" +
+    public void getDanishZoneName() throws Exception {
+        MockHelper.mockCommandBuilderDownloadSpeakerInfo("<?xml version=\"1.0\" ?>\n" +
                 "<?xml-stylesheet type=\"text/xsl\" href=\"/xml/review.xsl\"?><ZPSupportInfo><ZPInfo>" +
                 "<ZoneName>0. KÃ¸kken</ZoneName><ZoneIcon>x-rincon-roomicon:kitchen</ZoneIcon>" +
                 "<Configuration>1</Configuration><LocalUID>RINCON_B8E937568F5A01400</LocalUID>" +
@@ -257,16 +255,16 @@ public class SonosDeviceTest {
                 "<Copyright>Â© 2003-2017, Sonos, Inc. All rights reserved.</Copyright>" +
                 "<ExtraInfo>OTP: </ExtraInfo><HTAudioInCode>0</HTAudioInCode><IdxTrk></IdxTrk><MDP2Ver>0</MDP2Ver>" +
                 "<MDP3Ver>0</MDP3Ver><RegState>3</RegState><CustomerID>XXXX</CustomerID>" +
-                "</ZPInfo></ZPSupportInfo>").when(sonosDevice).downloadSpeakerInfo();
+                "</ZPInfo></ZPSupportInfo>");
 
-        assertEquals("0. KÃ¸kken", sonosDevice.getZoneName());
+        assertEquals("0. KÃ¸kken", new SonosDevice("127.0.0.1").getZoneName());
     }
 
     @Test(expected = UPnPSonosControllerException.class)
     public void errorParsing() throws IOException, SonosControllerException {
         SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
 
-        sonosDevice.handleError("<?xml version=\"1.0\"?>\n" +
+        CommandBuilder.handleError("127.0.0.1", "<?xml version=\"1.0\"?>\n" +
                 " <s:Envelope\n" +
                 "   xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
                 "   s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n" +
@@ -286,8 +284,7 @@ public class SonosDeviceTest {
 
     @Test
     public void noErrorParsing() throws IOException, SonosControllerException {
-        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
-        sonosDevice.handleError("");
+        CommandBuilder.handleError("127.0.0.1", "");
     }
 
     @Test
@@ -295,7 +292,7 @@ public class SonosDeviceTest {
         SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
 
         try {
-            sonosDevice.handleError("<?xml version=\"1.0\"?>\n" +
+            CommandBuilder.handleError("127.0.0.1", "<?xml version=\"1.0\"?>\n" +
                     " <s:Envelope\n" +
                     "   xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
                     "   s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n" +
@@ -338,7 +335,7 @@ public class SonosDeviceTest {
                 " </s:Envelope>";
 
         try {
-            sonosDevice.handleError(response);
+            CommandBuilder.handleError("127.0.0.1", response);
         } catch (UPnPSonosControllerException e) {
             assertEquals(response, e.getResponse());
         }
