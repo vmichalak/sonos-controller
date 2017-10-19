@@ -22,6 +22,16 @@ SonosDevice sonos = new SonosDevice("10.0.0.102");
 sonos.pause();
 ```
 
+## How to clone the project
+
+To clone and recover the dependencies do the following commands:
+```
+git clone https://github.com/vmichalak/sonos-controller.git
+cd sonos-controller
+git submodule init
+git submodule update
+```
+
 ## Android Developer 
 
 Add this line to your gradle file.
