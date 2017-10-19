@@ -1,0 +1,3 @@
+[submodule "lib/ssdp-client"]
+	path = lib/ssdp-client
+	url = https://github.com/vmichalak/ssdp-client.git
