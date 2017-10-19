@@ -127,7 +127,7 @@ class CommandBuilder {
                 errorCode, desc, response);
     }
 
-    private String getBody() {
+    protected String getBody() {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry entry : bodyEntries.entrySet()) {
             sb.append("<").append(entry.getKey()).append(">").append(entry.getValue()).append("</").append(entry.getKey()).append(">");

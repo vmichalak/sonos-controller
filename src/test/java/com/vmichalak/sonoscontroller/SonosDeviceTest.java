@@ -4,6 +4,7 @@ import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -186,7 +187,8 @@ public class SonosDeviceTest {
                 "<CurrentZoneGroupName>Salon</CurrentZoneGroupName>" +
                 "<CurrentZoneGroupID>X</CurrentZoneGroupID>" +
                 "<CurrentZonePlayerUUIDsInGroup>A,B,X</CurrentZonePlayerUUIDsInGroup>"); //TODO: Add True Data
-        SonosZoneInfo zoneInfo = new SonosDevice("127.0.0.1").getZoneGroupState();
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        SonosZoneInfo zoneInfo = sonosDevice.getZoneGroupState();
         assertEquals("X", zoneInfo.getId());
         assertEquals("Salon", zoneInfo.getName());
         List<String> inGroup = new ArrayList<String>();
@@ -194,6 +196,26 @@ public class SonosDeviceTest {
         inGroup.add("B");
         inGroup.add("X");
         assertEquals(inGroup, zoneInfo.getZonePlayerUIDInGroup());
+    }
+
+    @Test
+    public void isJoined() throws Exception {
+        MockHelper.mockCommandBuilder(
+                "<CurrentZoneGroupName>Salon</CurrentZoneGroupName>" +
+                        "<CurrentZoneGroupID>X</CurrentZoneGroupID>" +
+                        "<CurrentZonePlayerUUIDsInGroup>A,B,X</CurrentZonePlayerUUIDsInGroup>"); //TODO: Add True Data
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        assertEquals(true, sonosDevice.isJoined());
+    }
+
+    @Test
+    public void isNotJoined() throws Exception {
+        MockHelper.mockCommandBuilder(
+                "<CurrentZoneGroupName>Salon</CurrentZoneGroupName>" +
+                        "<CurrentZoneGroupID>X</CurrentZoneGroupID>" +
+                        "<CurrentZonePlayerUUIDsInGroup>X</CurrentZonePlayerUUIDsInGroup>"); //TODO: Add True Data
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        assertEquals(false, sonosDevice.isJoined());
     }
 
 
@@ -356,6 +378,35 @@ public class SonosDeviceTest {
         } catch (UPnPSonosControllerException e) {
             assertEquals(response, e.getResponse());
         }
+    }
+
+    @Test
+    public void checkCommandBuilderUsage() throws Exception {
+        CommandBuilder commandBuilderMock = MockHelper.mockCommandBuilder("");
+
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+
+        sonosDevice.play();
+        sonosDevice.playUri("http://test.com", "");
+        sonosDevice.pause();
+        sonosDevice.stop();
+        sonosDevice.seek("01:01:01");
+        sonosDevice.next();
+        sonosDevice.previous();
+        sonosDevice.setPlayMode(PlayMode.NORMAL);
+        sonosDevice.clearQueue();
+        sonosDevice.join("MyPrettyUID<3");
+        sonosDevice.unjoin();
+        sonosDevice.setVolume(100);
+        sonosDevice.setMute(true);
+        sonosDevice.setLoudness(true);
+        sonosDevice.setTreble(8);
+        sonosDevice.setNightMode(true);
+        sonosDevice.setZoneName("test");
+        sonosDevice.setLedState(true);
+        sonosDevice.setLedState(false);
+
+        Mockito.verify(commandBuilderMock, Mockito.times(20)).executeOn("127.0.0.1");
     }
 
     @Test
