@@ -95,6 +95,8 @@ class CommandBuilder {
     }
 
     public CommandBuilder put(String key, String value) {
+        key = escapeSpecialCharacters(key);
+        value = escapeSpecialCharacters(value);
         this.bodyEntries.put(key, value);
         return this;
     }
@@ -140,4 +142,35 @@ class CommandBuilder {
         return httpClient;
     }
 
+    private String escapeSpecialCharacters(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder(value.length());
+        for(int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            switch(c) {
+                case '&':
+                    sb.append("&amp;");
+                    break;
+                case '<':
+                    sb.append("&lt;");
+                    break;
+                case '>':
+                    sb.append("&gt;");
+                    break;
+                case '"':
+                    sb.append("&quot;");
+                    break;
+                case '\'':
+                    sb.append("&apos;");
+                    break;
+                default:
+                    sb.append(c);
+                    break;
+            }
+        }
+        return sb.toString();
+    }
 }
