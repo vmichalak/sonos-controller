@@ -139,4 +139,5 @@ class CommandBuilder {
         if(httpClient == null) { httpClient = HttpClientBuilder.create().build(); }
         return httpClient;
     }
+
 }
