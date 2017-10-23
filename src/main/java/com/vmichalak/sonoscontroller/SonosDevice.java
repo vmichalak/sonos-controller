@@ -54,8 +54,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public PlayState getPlayState() throws IOException, SonosControllerException {
-        String r = CommandBuilder.transport("GetTransportInfo").put("InstanceID", "0").put("CurrentTransportState", "")
-                .put("CurrentTransportStatus", "").executeOn(this.ip);
+        String r = CommandBuilder.transport("GetTransportInfo").put("InstanceID", "0").executeOn(this.ip);
         return PlayState.valueOf(ParserHelper.findOne("<CurrentTransportState>(.*)</CurrentTransportState>", r));
     }
 

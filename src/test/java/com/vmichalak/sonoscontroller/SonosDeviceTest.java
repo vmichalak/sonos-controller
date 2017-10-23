@@ -381,6 +381,58 @@ public class SonosDeviceTest {
     }
 
     @Test
+    public void getStoppedPlayState() throws Exception {
+        String response = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+                "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
+                "<u:GetTransportInfoResponse xmlns:u=\"urn:schemas-upnp-org:service:AVTransport:1\">" +
+                "<CurrentTransportState>STOPPED</CurrentTransportState><CurrentTransportStatus>OK" +
+                "</CurrentTransportStatus><CurrentSpeed>1</CurrentSpeed></u:GetTransportInfoResponse>" +
+                "</s:Body></s:Envelope>";
+        MockHelper.mockCommandBuilder(response);
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        assertEquals(PlayState.STOPPED, sonosDevice.getPlayState());
+    }
+
+    @Test
+    public void getPlayingPlayState() throws Exception {
+        String response = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+                "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
+                "<u:GetTransportInfoResponse xmlns:u=\"urn:schemas-upnp-org:service:AVTransport:1\">" +
+                "<CurrentTransportState>PLAYING</CurrentTransportState><CurrentTransportStatus>OK" +
+                "</CurrentTransportStatus><CurrentSpeed>1</CurrentSpeed></u:GetTransportInfoResponse>" +
+                "</s:Body></s:Envelope>";
+        MockHelper.mockCommandBuilder(response);
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        assertEquals(PlayState.PLAYING, sonosDevice.getPlayState());
+    }
+
+    @Test
+    public void getPausedPlayState() throws Exception {
+        String response = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+                "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
+                "<u:GetTransportInfoResponse xmlns:u=\"urn:schemas-upnp-org:service:AVTransport:1\">" +
+                "<CurrentTransportState>PAUSED_PLAYBACK</CurrentTransportState><CurrentTransportStatus>OK" +
+                "</CurrentTransportStatus><CurrentSpeed>1</CurrentSpeed></u:GetTransportInfoResponse>" +
+                "</s:Body></s:Envelope>";
+        MockHelper.mockCommandBuilder(response);
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        assertEquals(PlayState.PAUSED_PLAYBACK, sonosDevice.getPlayState());
+    }
+
+    @Test
+    public void getErrorPlayState() throws Exception {
+        String response = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+                "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
+                "<u:GetTransportInfoResponse xmlns:u=\"urn:schemas-upnp-org:service:AVTransport:1\">" +
+                "<CurrentTransportState>ERROR</CurrentTransportState><CurrentTransportStatus>OK" +
+                "</CurrentTransportStatus><CurrentSpeed>1</CurrentSpeed></u:GetTransportInfoResponse>" +
+                "</s:Body></s:Envelope>";
+        MockHelper.mockCommandBuilder(response);
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        assertEquals(PlayState.ERROR, sonosDevice.getPlayState());
+    }
+
+    @Test
     public void checkCommandBuilderUsage() throws Exception {
         CommandBuilder commandBuilderMock = MockHelper.mockCommandBuilder("");
 
