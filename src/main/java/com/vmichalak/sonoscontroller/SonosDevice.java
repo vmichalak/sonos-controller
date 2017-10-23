@@ -179,6 +179,19 @@ public class SonosDevice {
                 .put("CurrentURI", "x-rincon-stream:" + uid).put("CurrentURIMetaData", "").executeOn(this.ip);
     }
 
+    /**
+     * Switch the speaker's input to TV input.
+     * /!\ WARNING: WORKS ONLY WITH PLAYBAR / PLAYBASE /!\
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void switchToTV() throws IOException, SonosControllerException {
+        String uid = this.getSpeakerInfo().getLocalUID();
+        CommandBuilder.transport("SetAVTransportURI").put("InstanceID", "0")
+                .put("CurrentURI", "x-sonos-htastream:" + uid + ":spdif").put("CurrentURIMetaData", "")
+                .executeOn(this.ip);
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="RENDERING">
