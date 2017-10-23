@@ -3,8 +3,6 @@ package com.vmichalak.sonoscontroller;
 import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,7 +33,7 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public void playUri(String uri, String meta) throws IOException, SonosControllerException {
-        CommandBuilder.transport("SetAVTransportURI").put("InstanceID", "0").put("CurrentURI", URLEncoder.encode(uri, StandardCharsets.UTF_8.toString()))
+        CommandBuilder.transport("SetAVTransportURI").put("InstanceID", "0").put("CurrentURI", uri)
                 .put("CurrentURIMetaData", meta).executeOn(this.ip);
         this.play();
     }
