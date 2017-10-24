@@ -367,6 +367,41 @@ public class SonosDevice {
         this.setNightMode(!this.isNightModeActivated());
     }
 
+    /**
+     * Check if the Dialog Mode is activated or not.
+     * /!\ WARNING: WORKS ONLY WITH PLAYBAR / PLAYBASE /!\
+     * @return True if activated, False if isn't.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public boolean isDialogModeActivated() throws IOException, SonosControllerException {
+        String s = CommandBuilder.rendering("GetEQ").put("InstanceID", "0").put("EQType", "DialogLevel")
+                .executeOn(this.ip);
+        return ParserHelper.findOne("<CurrentValue>(.*)</CurrentValue>", s).equals("1") ? true : false;
+    }
+
+    /**
+     * Set the Dialog Mode.
+     * /!\ WARNING: WORKS ONLY WITH PLAYBAR / PLAYBASE /!\
+     * @param state
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void setDialogMode(boolean state) throws IOException, SonosControllerException {
+        CommandBuilder.rendering("SetEQ").put("InstanceID", "0").put("EQType", "DialogLevel")
+                .put("DesiredValue", state ? "1" : "0").executeOn(this.ip);
+    }
+
+    /**
+     * Turn On / Off the Night Mode.
+     * /!\ WARNING: WORKS ONLY WITH PLAYBAR / PLAYBASE /!\
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void switchDialogMode() throws IOException, SonosControllerException {
+        this.setDialogMode(!this.isDialogModeActivated());
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="DEVICE">
