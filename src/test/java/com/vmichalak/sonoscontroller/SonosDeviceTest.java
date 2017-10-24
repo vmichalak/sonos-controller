@@ -433,6 +433,29 @@ public class SonosDeviceTest {
     }
 
     @Test
+    public void getDesactivatedDialogMode() throws Exception {
+        String response = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+                "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
+                "<u:GetEQResponse xmlns:u=\"urn:schemas-upnp-org:service:RenderingControl:1\"><CurrentValue>0" +
+                "</CurrentValue></u:GetEQResponse></s:Body></s:Envelope>";
+        MockHelper.mockCommandBuilder(response);
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        assertEquals(false, sonosDevice.isDialogModeActivated());
+    }
+
+    @Test
+    public void getActivatedDialogMode() throws Exception {
+        String response = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+                "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
+                "<u:GetEQResponse xmlns:u=\"urn:schemas-upnp-org:service:RenderingControl:1\"><CurrentValue>1" +
+                "</CurrentValue></u:GetEQResponse></s:Body></s:Envelope>";
+        MockHelper.mockCommandBuilder(response);
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        assertEquals(true, sonosDevice.isDialogModeActivated());
+    }
+
+
+    @Test
     public void checkCommandBuilderUsage() throws Exception {
         CommandBuilder commandBuilderMock = MockHelper.mockCommandBuilder("");
 
@@ -457,8 +480,9 @@ public class SonosDeviceTest {
         sonosDevice.setZoneName("test");
         sonosDevice.setLedState(true);
         sonosDevice.setLedState(false);
+        sonosDevice.setDialogMode(true);
 
-        Mockito.verify(commandBuilderMock, Mockito.times(20)).executeOn("127.0.0.1");
+        Mockito.verify(commandBuilderMock, Mockito.times(21)).executeOn("127.0.0.1");
     }
 
     @Test
