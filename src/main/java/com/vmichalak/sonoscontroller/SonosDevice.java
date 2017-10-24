@@ -445,6 +445,18 @@ public class SonosDevice {
         return new SonosZoneInfo(name, id, deviceList);
     }
 
+    /**
+     * Check if the speaker is a group coordinator or not.
+     * @return True if the speaker is a group coordinator, otherwise False.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public boolean isCoordinator() throws IOException, SonosControllerException {
+        // If zone have the same UID as the speaker -> speaker is the coordinator of the zone.
+        String uid = this.getSpeakerInfo().getLocalUID();
+        return getZoneGroupState().getId().startsWith(uid);
+    }
+
     //</editor-fold>
 
     /**
