@@ -54,6 +54,10 @@ Feel free to participate !
 
 There is a Sonos Controller group over at [Slack](https://join.slack.com/t/sonoscontroller/shared_invite/enQtMjYwMTQwMzc4ODE3LTQyMmZkMDFlNTQxNjJiZTJmOTZmZjljZmYzYmQxNmM1OTBkMTgyNzFlM2NiZmNjZjA4OWYxY2MxNTAyNTBmN2I). Feel free to drop by for support, ideas or casual conversation related to Sonos Controller and Sonos in general :wink:.
 
+## Sample projects made with this library
+
+[Sonos Remote Controller based on Android Things](https://www.hackster.io/mguntli/sonos-remote-things-e94011) by [Michael Guntli](https://github.com/mguntli)
+
 ## Special Thanks
 
 Special Thanks to [rahims](https://github.com/rahims) for is work on Sonos API ! 
