@@ -5,7 +5,6 @@ import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +45,6 @@ class CommandBuilder {
         ERROR_DESCRIPTION_MAP.put(612, "No Such Session");
     }
 
-    //private static HttpClient httpClient;
     private static OkHttpClient httpClient;
 
     private final String endpoint;
@@ -80,15 +78,6 @@ class CommandBuilder {
         return new CommandBuilder(ZONE_GROUP_TOPOLOGY_ENDPOINT, ZONE_GROUP_TOPOLOGY_SERVICE, action);
     }
 
-    /*public static String downloadSpeakerInfo(String ip) throws IOException, SonosControllerException {
-        String uri = "http://" + ip + ":" + SOAP_PORT + "/status/zp";
-        HttpGet request = new HttpGet(uri);
-        HttpResponse response = getHttpClient().execute(request);
-        String responseString = EntityUtils.toString(response.getEntity());
-        handleError(ip, responseString);
-        return responseString;
-    }*/
-
     public static String downloadSpeakerInfo(String ip) throws IOException, SonosControllerException {
         String uri = "http://" + ip + ":" + SOAP_PORT + "/status/zp";
         Request request = new Request.Builder().url(uri).get().build();
@@ -110,16 +99,9 @@ class CommandBuilder {
                 + this.getBody()
                 + "</u:" + this.action + ">"
                 + "</s:Body></s:Envelope>";
-        //content = URLEncoder.encode(content, "UTF-8");
         RequestBody body = RequestBody.create(MediaType.parse("application/text"), content.getBytes("UTF-8"));
-
-        Request request = new Request.Builder()
-                .url(uri)
-                .addHeader("Content-Type", "text/xml")
-                .addHeader("SOAPACTION", this.service + "#" + this.action)
-                .post(body)
-                .build();
-
+        Request request = new Request.Builder().url(uri).addHeader("Content-Type", "text/xml")
+                .addHeader("SOAPACTION", this.service + "#" + this.action).post(body).build();
         String response = getHttpClient().newCall(request).execute().body().string();
         handleError(ip, response);
         return response;
