@@ -2,16 +2,10 @@ package com.vmichalak.sonoscontroller;
 
 import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import okhttp3.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +46,8 @@ class CommandBuilder {
         ERROR_DESCRIPTION_MAP.put(612, "No Such Session");
     }
 
-    private static HttpClient httpClient;
+    //private static HttpClient httpClient;
+    private static OkHttpClient httpClient;
 
     private final String endpoint;
     private final String service;
@@ -85,13 +80,21 @@ class CommandBuilder {
         return new CommandBuilder(ZONE_GROUP_TOPOLOGY_ENDPOINT, ZONE_GROUP_TOPOLOGY_SERVICE, action);
     }
 
-    public static String downloadSpeakerInfo(String ip) throws IOException, SonosControllerException {
+    /*public static String downloadSpeakerInfo(String ip) throws IOException, SonosControllerException {
         String uri = "http://" + ip + ":" + SOAP_PORT + "/status/zp";
         HttpGet request = new HttpGet(uri);
         HttpResponse response = getHttpClient().execute(request);
         String responseString = EntityUtils.toString(response.getEntity());
         handleError(ip, responseString);
         return responseString;
+    }*/
+
+    public static String downloadSpeakerInfo(String ip) throws IOException, SonosControllerException {
+        String uri = "http://" + ip + ":" + SOAP_PORT + "/status/zp";
+        Request request = new Request.Builder().url(uri).get().build();
+        String response = getHttpClient().newCall(request).execute().body().string();
+        handleError(ip, response);
+        return response;
     }
 
     public CommandBuilder put(String key, String value) {
@@ -101,21 +104,25 @@ class CommandBuilder {
 
     public String executeOn(String ip) throws IOException, SonosControllerException {
         String uri = "http://" + ip + ":" + SOAP_PORT + this.endpoint;
-        HttpPost request = new HttpPost(uri);
-        request.setHeader("Content-Type", "text/xml");
-        request.setHeader("SOAPACTION", this.service + "#" + this.action);
         String content = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\""
                 + " s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>"
                 + "<u:" + this.action + " xmlns:u=\"" + this.service + "\">"
                 + this.getBody()
                 + "</u:" + this.action + ">"
                 + "</s:Body></s:Envelope>";
-        HttpEntity entity = new ByteArrayEntity(content.getBytes("UTF-8"));
-        request.setEntity(entity);
-        HttpResponse response = getHttpClient().execute(request);
-        String responseString = EntityUtils.toString(response.getEntity());
-        this.handleError(ip, responseString);
-        return responseString;
+        //content = URLEncoder.encode(content, "UTF-8");
+        RequestBody body = RequestBody.create(MediaType.parse("application/text"), content.getBytes("UTF-8"));
+
+        Request request = new Request.Builder()
+                .url(uri)
+                .addHeader("Content-Type", "text/xml")
+                .addHeader("SOAPACTION", this.service + "#" + this.action)
+                .post(body)
+                .build();
+
+        String response = getHttpClient().newCall(request).execute().body().string();
+        handleError(ip, response);
+        return response;
     }
 
     protected static void handleError(String ip, String response) throws SonosControllerException {
@@ -135,9 +142,47 @@ class CommandBuilder {
         return sb.toString();
     }
 
-    private static HttpClient getHttpClient() {
-        if(httpClient == null) { httpClient = HttpClientBuilder.create().build(); }
+    private static OkHttpClient getHttpClient() {
+        if(httpClient == null) { httpClient = new OkHttpClient(); }
         return httpClient;
     }
+
+    /*private static HttpClient getHttpClient() {
+        if(httpClient == null) { httpClient = HttpClientBuilder.create().build(); }
+        return httpClient;
+    }*/
+
+    private String escapeSpecialCharacters(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder(value.length());
+        for(int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            switch(c) {
+                case '&':
+                    sb.append("&amp;");
+                    break;
+                case '<':
+                    sb.append("&lt;");
+                    break;
+                case '>':
+                    sb.append("&gt;");
+                    break;
+                case '"':
+                    sb.append("&quot;");
+                    break;
+                case '\'':
+                    sb.append("&apos;");
+                    break;
+                default:
+                    sb.append(c);
+                    break;
+            }
+        }
+        return sb.toString();
+    }
+
 
 }

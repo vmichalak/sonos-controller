@@ -19,5 +19,10 @@ public enum PlayState {
     /**
      * Player is paused.
      */
-    PAUSED_PLAYBACK
+    PAUSED_PLAYBACK,
+
+    /**
+     * Player is loading.
+     */
+    TRANSITIONING
 }

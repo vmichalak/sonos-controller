@@ -433,6 +433,20 @@ public class SonosDeviceTest {
     }
 
     @Test
+    public void getTransitioningPlayState() throws Exception {
+        String response = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+                "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
+                "<u:GetTransportInfoResponse xmlns:u=\"urn:schemas-upnp-org:service:AVTransport:1\">" +
+                "<CurrentTransportState>TRANSITIONING</CurrentTransportState><CurrentTransportStatus>OK" +
+                "</CurrentTransportStatus><CurrentSpeed>1</CurrentSpeed></u:GetTransportInfoResponse>" +
+                "</s:Body></s:Envelope>";
+        MockHelper.mockCommandBuilder(response);
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        assertEquals(PlayState.TRANSITIONING, sonosDevice.getPlayState());
+    }
+
+
+    @Test
     public void getDesactivatedDialogMode() throws Exception {
         String response = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
                 "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +

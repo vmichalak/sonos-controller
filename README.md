@@ -3,6 +3,8 @@
 # sonos-controller
 Java API for controlling [SONOS](http://www.sonos.com/) players.
 
+100% Android and Kotlin compatible.
+
 [![Travis Status](https://img.shields.io/travis/vmichalak/sonos-controller.svg)](https://travis-ci.org/vmichalak/sonos-controller)
 [![Coverage Status](https://coveralls.io/repos/github/vmichalak/sonos-controller/badge.svg?branch=master)](https://coveralls.io/github/vmichalak/sonos-controller?branch=master)
 [![Join us on Slack!](https://img.shields.io/badge/slack-sonoscontroller-lightgrey.svg)](https://join.slack.com/t/sonoscontroller/shared_invite/enQtMjYwMTQwMzc4ODE3LTQyMmZkMDFlNTQxNjJiZTJmOTZmZjljZmYzYmQxNmM1OTBkMTgyNzFlM2NiZmNjZjA4OWYxY2MxNTAyNTBmN2I)
@@ -31,13 +33,6 @@ git clone https://github.com/vmichalak/sonos-controller.git
 cd sonos-controller
 git submodule init
 git submodule update
-```
-
-## Android Developer 
-
-Add this line to your gradle file.
-```
-compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
 ```
 
 ## To-Do
