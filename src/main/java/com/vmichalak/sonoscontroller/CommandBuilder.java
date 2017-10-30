@@ -43,6 +43,7 @@ class CommandBuilder {
         ERROR_DESCRIPTION_MAP.put(610, "Invalid Sequence");
         ERROR_DESCRIPTION_MAP.put(611, "Invalid Control Url");
         ERROR_DESCRIPTION_MAP.put(612, "No Such Session");
+        ERROR_DESCRIPTION_MAP.put(714, "Illegal MIME-Type");
     }
 
     private static OkHttpClient httpClient;
