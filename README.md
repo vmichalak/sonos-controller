@@ -59,4 +59,4 @@ Special Thanks to [rahims](https://github.com/rahims) for is work on Sonos API !
 
 ## Licence
 
-Released under the [MIT license.](LICENCE)
+Released under the [MIT license.](https://github.com/vmichalak/sonos-controller/blob/master/LICENCE.md)
