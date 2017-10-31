@@ -43,6 +43,9 @@ class CommandBuilder {
         ERROR_DESCRIPTION_MAP.put(610, "Invalid Sequence");
         ERROR_DESCRIPTION_MAP.put(611, "Invalid Control Url");
         ERROR_DESCRIPTION_MAP.put(612, "No Such Session");
+        ERROR_DESCRIPTION_MAP.put(701, "Invalid transition");
+        ERROR_DESCRIPTION_MAP.put(702, "No content");
+        ERROR_DESCRIPTION_MAP.put(712, "Unsupported Play Mode");
         ERROR_DESCRIPTION_MAP.put(714, "Illegal MIME-Type");
     }
 
