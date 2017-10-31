@@ -17,6 +17,12 @@ repositories {
     jcenter()
 }
 
+test {
+    useJUnit {
+        excludeCategories 'com.vmichalak.sonoscontroller.testcategory.UnmockedTest'
+    }
+}
+
 dependencies {
     compile project(':ssdp-client')
     compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.9.0'
