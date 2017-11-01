@@ -62,15 +62,15 @@ public class SonosDevice {
      * @throws InterruptedException
      */
     public void clip(String uri, String metadata) throws IOException, SonosControllerException, InterruptedException {
+        PlayState previousState = this.getPlayState();
         TrackInfo previous = this.getCurrentTrackInfo();
         this.playUri(uri, metadata);
-        while (this.getPlayState() != PlayState.STOPPED) {
-            Thread.sleep(500);
-        }
+        while (!this.getPlayState().equals(PlayState.STOPPED)) { Thread.sleep(500); }
         this.playUri("x-rincon-queue:" + this.getSpeakerInfo().getLocalUID() + "#0", "");
-        this.playFromQueue(previous.getQueueIndex());
+        CommandBuilder.transport("Seek").put("InstanceID", "0").put("Unit", "TRACK_NR")
+                .put("Target", String.valueOf(previous.getQueueIndex())).executeOn(this.ip);
         this.seek(previous.getPosition());
-        this.play();
+        if(previousState.equals(PlayState.PLAYING)) { this.play(); } else { this.pause(); }
     }
 
     /**

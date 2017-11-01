@@ -502,7 +502,7 @@ public class SonosDeviceTest {
                 "album='Midnight', " +
                 "albumArtURI='https://i.scdn.co/image/1cc3ef402dc422472cebc5543749f0c89baaedc2'}",
                 sonosDevice.getCurrentTrackInfo().getMetadata().toString());
-        assertEquals("TrackInfo{playlistPosition=1, duration='0:03:21', position='0:00:17', " +
+        assertEquals("TrackInfo{queueIndex=1, duration='0:03:21', position='0:00:17', " +
                 "uri='x-sonos-spotify:spotify%3atrack%3a2UAUITgVFXb27TV58EWE6L?sid=9&flags=0&sn=3', " +
                 "metadata=TrackMetadata{title='Midnight', creator='Trinix', albumArtist='Trinix', " +
                 "album='Midnight', " +
