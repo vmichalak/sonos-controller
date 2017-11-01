@@ -1,8 +1,11 @@
 package com.vmichalak.sonoscontroller;
 
 import com.vmichalak.sonoscontroller.exception.SonosControllerException;
+import com.vmichalak.sonoscontroller.model.*;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 
@@ -94,6 +97,24 @@ public class SonosDevice {
      */
     public void previous() throws IOException, SonosControllerException {
         CommandBuilder.transport("Previous").put("InstanceID", "0").put("Speed", "1").executeOn(this.ip);
+    }
+
+    /**
+     * Get Current Track Info (position in the queue, duration, position, ...).
+     * @return TrackInfo object.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public TrackInfo getCurrentTrackInfo() throws IOException, SonosControllerException {
+        String r = CommandBuilder.transport("GetPositionInfo").put("InstanceID", "0").put("Channel", "Master")
+                .executeOn(this.ip);
+        // TODO: Extract track Metadata
+        return new TrackInfo(
+                Integer.valueOf(ParserHelper.findOne("<Track>([0-9]*)</Track>", r)),
+                ParserHelper.findOne("<TrackDuration>([0-9]*:[0-9]*:[0-9]*)</TrackDuration>", r),
+                ParserHelper.findOne("<RelTime>([0-9]*:[0-9]*:[0-9]*)</RelTime>", r),
+                ParserHelper.findOne("<TrackURI>(.*)</TrackURI>", r)
+        );
     }
 
     /**

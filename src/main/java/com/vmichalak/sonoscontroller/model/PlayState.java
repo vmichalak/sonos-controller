@@ -1,4 +1,4 @@
-package com.vmichalak.sonoscontroller;
+package com.vmichalak.sonoscontroller.model;
 
 public enum PlayState {
     /**

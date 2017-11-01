@@ -2,6 +2,10 @@ package com.vmichalak.sonoscontroller;
 
 import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
+import com.vmichalak.sonoscontroller.model.PlayMode;
+import com.vmichalak.sonoscontroller.model.PlayState;
+import com.vmichalak.sonoscontroller.model.SonosSpeakerInfo;
+import com.vmichalak.sonoscontroller.model.SonosZoneInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;

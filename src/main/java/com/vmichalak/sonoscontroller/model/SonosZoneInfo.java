@@ -1,4 +1,7 @@
-package com.vmichalak.sonoscontroller;
+package com.vmichalak.sonoscontroller.model;
+
+import com.vmichalak.sonoscontroller.SonosDevice;
+import com.vmichalak.sonoscontroller.SonosDiscovery;
 
 import java.io.IOException;
 import java.util.ArrayList;

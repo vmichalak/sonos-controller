@@ -2,6 +2,8 @@ package com.vmichalak.sonoscontroller;
 
 import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
+import com.vmichalak.sonoscontroller.model.PlayMode;
+import com.vmichalak.sonoscontroller.model.PlayState;
 import com.vmichalak.sonoscontroller.testcategory.UnmockedTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +19,7 @@ import static org.junit.Assert.assertEquals;
  * @author Valentin Michalak
  */
 @Category(UnmockedTest.class)
-public class NonMockedSonosDeviceTest {
+public class UnmockedSonosDeviceTest {
     private SonosDevice sonosDevice;
 
     @Before
