@@ -41,6 +41,18 @@ public class SonosDevice {
     }
 
     /**
+     * Play an item from the queue.
+     * @param queueIndex >= 0
+     */
+    public void playFromQueue(int queueIndex) throws IOException, SonosControllerException {
+        if(queueIndex < 0) { throw new IllegalArgumentException("Queue index cannot be < 0."); }
+        this.playUri("x-rincon-queue:" + this.getSpeakerInfo().getLocalUID() + "#0", "");
+        CommandBuilder.transport("Seek").put("InstanceID", "0").put("Unit", "TRACK_NR")
+                .put("Target", String.valueOf(queueIndex + 1)).executeOn(this.ip);
+        this.play();
+    }
+
+    /**
      * Pause the currently playing track.
      * @throws IOException
      * @throws SonosControllerException
