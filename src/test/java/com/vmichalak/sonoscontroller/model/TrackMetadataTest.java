@@ -26,5 +26,6 @@ public class TrackMetadataTest {
         assertEquals("Lukas Graham", parsedMetadata.getAlbumArtist());
         assertEquals("Lukas Graham (Blue Album)", parsedMetadata.getAlbum());
         assertEquals("https://i.scdn.co/image/581f4402e14ac0f839f7b50dff4fdd0bbc02bee5", parsedMetadata.getAlbumArtURI());
+        assertEquals("TrackMetadata{title='Drunk In The Morning', creator='Lukas Graham', albumArtist='Lukas Graham', album='Lukas Graham (Blue Album)', albumArtURI='https://i.scdn.co/image/581f4402e14ac0f839f7b50dff4fdd0bbc02bee5'}", parsedMetadata.toString());
     }
 }

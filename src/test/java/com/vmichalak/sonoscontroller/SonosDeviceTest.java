@@ -472,6 +472,43 @@ public class SonosDeviceTest {
         assertEquals(true, sonosDevice.isDialogModeActivated());
     }
 
+    @Test
+    public void getCurrentTrackInfo() throws Exception {
+        String response = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+                "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:GetPositionInfoResponse " +
+                "xmlns:u=\"urn:schemas-upnp-org:service:AVTransport:1\"><Track>1</Track><TrackDuration>0:03:21" +
+                "</TrackDuration><TrackMetaData><DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" " +
+                "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" " +
+                "xmlns:r=\"urn:schemas-rinconnetworks-com:metadata-1-0/\" " +
+                "xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\"><item id=\"-1\" parentID=\"-1\">" +
+                "<res protocolInfo=\"http-get:*:audio/x-spotify:*\" duration=\"0:03:21\">" +
+                "x-sonos-spotify:spotify%3atrack%3a2UAUITgVFXb27TV58EWE6L?sid=9&amp;flags=0&amp;sn=3</res>" +
+                "<upnp:albumArtURI>https://i.scdn.co/image/1cc3ef402dc422472cebc5543749f0c89baaedc2" +
+                "</upnp:albumArtURI><upnp:class>object.item.audioItem.musicTrack</upnp:class><dc:title>Midnight" +
+                "</dc:title><dc:creator>Trinix</dc:creator><r:albumArtist>Trinix</r:albumArtist>" +
+                "<upnp:album>Midnight</upnp:album><r:tiid>b78efcb018ce3492e3845460d8a61bf4</r:tiid></item>" +
+                "</DIDL-Lite></TrackMetaData><TrackURI>" +
+                "x-sonos-spotify:spotify%3atrack%3a2UAUITgVFXb27TV58EWE6L?sid=9&flags=0&sn=3</TrackURI>" +
+                "<RelTime>0:00:17</RelTime><AbsTime>NOT_IMPLEMENTED</AbsTime><RelCount>2147483647</RelCount>" +
+                "<AbsCount>2147483647</AbsCount></u:GetPositionInfoResponse></s:Body></s:Envelope>";
+        MockHelper.mockCommandBuilder(response);
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        assertEquals(1, sonosDevice.getCurrentTrackInfo().getPlaylistPosition());
+        assertEquals("0:03:21", sonosDevice.getCurrentTrackInfo().getDuration());
+        assertEquals("0:00:17", sonosDevice.getCurrentTrackInfo().getPosition());
+        assertEquals("x-sonos-spotify:spotify%3atrack%3a2UAUITgVFXb27TV58EWE6L?sid=9&flags=0&sn=3",
+                sonosDevice.getCurrentTrackInfo().getUri());
+        assertEquals("TrackMetadata{title='Midnight', creator='Trinix', albumArtist='Trinix', " +
+                "album='Midnight', " +
+                "albumArtURI='https://i.scdn.co/image/1cc3ef402dc422472cebc5543749f0c89baaedc2'}",
+                sonosDevice.getCurrentTrackInfo().getMetadata().toString());
+        assertEquals("TrackInfo{playlistPosition=1, duration='0:03:21', position='0:00:17', " +
+                "uri='x-sonos-spotify:spotify%3atrack%3a2UAUITgVFXb27TV58EWE6L?sid=9&flags=0&sn=3', " +
+                "metadata=TrackMetadata{title='Midnight', creator='Trinix', albumArtist='Trinix', " +
+                "album='Midnight', " +
+                "albumArtURI='https://i.scdn.co/image/1cc3ef402dc422472cebc5543749f0c89baaedc2'}}",
+                sonosDevice.getCurrentTrackInfo().toString());
+    }
 
     @Test
     public void checkCommandBuilderUsage() throws Exception {
