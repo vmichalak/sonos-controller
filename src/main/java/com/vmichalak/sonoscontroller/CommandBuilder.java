@@ -92,7 +92,9 @@ class CommandBuilder {
     }
 
     public CommandBuilder put(String key, String value) {
-        value = StringEscapeUtils.escapeXml11(value);
+        if(!isEscaped(value)) {
+            value = StringEscapeUtils.escapeXml11(value);
+        }
         this.bodyEntries.put(key, value);
         return this;
     }
@@ -134,5 +136,13 @@ class CommandBuilder {
     private static OkHttpClient getHttpClient() {
         if(httpClient == null) { httpClient = new OkHttpClient(); }
         return httpClient;
+    }
+
+    private static boolean isEscaped(String s) {
+        return s.contains("&amp;")
+                || s.contains("&lt;")
+                || s.contains("&gt;")
+                || s.contains("&quot;")
+                || s.contains("&apos;");
     }
 }
