@@ -493,7 +493,7 @@ public class SonosDeviceTest {
                 "<AbsCount>2147483647</AbsCount></u:GetPositionInfoResponse></s:Body></s:Envelope>";
         MockHelper.mockCommandBuilder(response);
         SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
-        assertEquals(1, sonosDevice.getCurrentTrackInfo().getPlaylistPosition());
+        assertEquals(1, sonosDevice.getCurrentTrackInfo().getQueueIndex());
         assertEquals("0:03:21", sonosDevice.getCurrentTrackInfo().getDuration());
         assertEquals("0:00:17", sonosDevice.getCurrentTrackInfo().getPosition());
         assertEquals("x-sonos-spotify:spotify%3atrack%3a2UAUITgVFXb27TV58EWE6L?sid=9&flags=0&sn=3",
