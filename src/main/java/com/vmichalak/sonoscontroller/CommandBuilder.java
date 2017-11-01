@@ -3,6 +3,7 @@ package com.vmichalak.sonoscontroller;
 import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
 import okhttp3.*;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -91,6 +92,9 @@ class CommandBuilder {
     }
 
     public CommandBuilder put(String key, String value) {
+        if(!isEscaped(value)) {
+            value = StringEscapeUtils.escapeXml11(value);
+        }
         this.bodyEntries.put(key, value);
         return this;
     }
@@ -107,6 +111,7 @@ class CommandBuilder {
         Request request = new Request.Builder().url(uri).addHeader("Content-Type", "text/xml")
                 .addHeader("SOAPACTION", this.service + "#" + this.action).post(body).build();
         String response = getHttpClient().newCall(request).execute().body().string();
+        response = StringEscapeUtils.unescapeXml(response);
         handleError(ip, response);
         return response;
     }
@@ -133,42 +138,11 @@ class CommandBuilder {
         return httpClient;
     }
 
-    /*private static HttpClient getHttpClient() {
-        if(httpClient == null) { httpClient = HttpClientBuilder.create().build(); }
-        return httpClient;
-    }*/
-
-    private String escapeSpecialCharacters(String value) {
-        if (value == null) {
-            return null;
-        }
-
-        StringBuilder sb = new StringBuilder(value.length());
-        for(int i = 0; i < value.length(); i++) {
-            char c = value.charAt(i);
-            switch(c) {
-                case '&':
-                    sb.append("&amp;");
-                    break;
-                case '<':
-                    sb.append("&lt;");
-                    break;
-                case '>':
-                    sb.append("&gt;");
-                    break;
-                case '"':
-                    sb.append("&quot;");
-                    break;
-                case '\'':
-                    sb.append("&apos;");
-                    break;
-                default:
-                    sb.append(c);
-                    break;
-            }
-        }
-        return sb.toString();
+    private static boolean isEscaped(String s) {
+        return s.contains("&amp;")
+                || s.contains("&lt;")
+                || s.contains("&gt;")
+                || s.contains("&quot;")
+                || s.contains("&apos;");
     }
-
-
 }
