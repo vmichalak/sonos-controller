@@ -1,21 +1,23 @@
-.. _getting_started:
-
 Getting started
 ===============
-
-
-
-.. _installation:
 
 Installation
 ------------
 
-.. _from_git:
+With Gradle
+^^^^^^^^^^^
 
-From git
-^^^^^^^^
+Not available for the moment.
 
-To use the library, you can clone the git repo directly.
+With Maven
+^^^^^^^^^^
+
+Not available for the moment.
+
+Manually from git
+^^^^^^^^^^^^^^^^^
+
+To install the library, you can clone the git repo directly.
 
 .. code-block:: shell
 
@@ -23,8 +25,6 @@ To use the library, you can clone the git repo directly.
     cd sonos-controller
     git submodule init
     git submodule update
-
-.. _tutorial:
 
 Tutorial
 --------
@@ -62,4 +62,4 @@ You can use the ``SonosDevice`` instance to interact with your SONOS speaker.
     device.setVolume(15);
     device.getVolume();
 
-
+Have fun now ! :)

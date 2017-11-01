@@ -1,0 +1,66 @@
+Sonos Controller 0.1 release notes
+----------------------------------
+
+The very first public release of Sonos Controller library.
+
+New methods
+^^^^^^^^^^^
+
+- SonosDiscovery
+    - discover()
+    - discoverByUID()
+    - discoverOne()
+- SonosDevice
+    - addToQueue()
+    - clearQueue()
+    - clip()
+    - getBass()
+    - getCurrentTrackInfo()
+    - getLedState()
+    - getPlayMode()
+    - getPlayState()
+    - getQueue()
+    - getSpeakerInfo()
+    - getTreble()
+    - getVolume()
+    - getZoneGroupState()
+    - getZoneName()
+    - isCoordinator()
+    - isDialogModeActivated()
+    - isJoined()
+    - isLoudnessActivated()
+    - isMuted()
+    - isNightModeActivated()
+    - join()
+    - joinedWith()
+    - next()
+    - pause()
+    - play()
+    - playFromQueue()
+    - playUri()
+    - previous()
+    - removeFromQueue()
+    - seek()
+    - setBass()
+    - setDialogMode()
+    - setLedState()
+    - setLoudness()
+    - setMute()
+    - setNightMode()
+    - setPlayMode()
+    - setTreble()
+    - setVolume()
+    - setZoneName()
+    - stop()
+    - switchDialogMode()
+    - switchLedState()
+    - switchMute()
+    - switchNightMode()
+    - switchToLineIn()
+    - switchToTV()
+    - unjoin()
+
+Coming next
+^^^^^^^^^^^
+
+For the next release, it is planned to work actively on a documentation to help users.
