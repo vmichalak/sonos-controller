@@ -111,6 +111,31 @@ public class SonosDevice {
     }
 
     /**
+     * Adds a given track to the queue.
+     * @param uri URI of a stream to be played.
+     * @param metadata The track metadata to show in the player (DIDL format).
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void addToQueue(String uri, String metadata) throws IOException, SonosControllerException {
+        CommandBuilder.transport("AddURIToQueue").put("InstanceID", "0").put("EnqueuedURI", uri)
+                .put("EnqueuedURIMetaData", metadata).put("DesiredFirstTrackNumberEnqueued", "0")
+                .put("EnqueueAsNext", "1").executeOn(this.ip);
+    }
+
+    /**
+     * Remove a track from the queue.
+     * @param queueIndex >= 0
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public void removeFromQueue(int queueIndex) throws IOException, SonosControllerException {
+        if(queueIndex < 0) { throw new IllegalArgumentException("Queue index cannot be < 0."); }
+        CommandBuilder.transport("RemoveTrackFromQueue").put("InstanceID", "0").put("ObjectID", "Q:0/" + queueIndex)
+                .put("UpdateID", "0").executeOn(this.ip);
+    }
+
+    /**
      * Get Current Track Info (position in the queue, duration, position, ...).
      * @return TrackInfo object.
      * @throws IOException
