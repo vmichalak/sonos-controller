@@ -108,12 +108,15 @@ public class SonosDevice {
     public TrackInfo getCurrentTrackInfo() throws IOException, SonosControllerException {
         String r = CommandBuilder.transport("GetPositionInfo").put("InstanceID", "0").put("Channel", "Master")
                 .executeOn(this.ip);
-        // TODO: Extract track Metadata
+        String track = ParserHelper.findOne("<Track>([0-9]*)</Track>", r);
+        int trackNumber = -1;
+        if(!track.equals("NOT_IMPLEMENTED") && !track.equals("")) { trackNumber = Integer.valueOf(track); }
         return new TrackInfo(
-                Integer.valueOf(ParserHelper.findOne("<Track>([0-9]*)</Track>", r)),
+                trackNumber,
                 ParserHelper.findOne("<TrackDuration>([0-9]*:[0-9]*:[0-9]*)</TrackDuration>", r),
                 ParserHelper.findOne("<RelTime>([0-9]*:[0-9]*:[0-9]*)</RelTime>", r),
-                ParserHelper.findOne("<TrackURI>(.*)</TrackURI>", r)
+                ParserHelper.findOne("<TrackURI>(.*)</TrackURI>", r),
+                TrackMetadata.parse(ParserHelper.findOne("<TrackMetaData>(.*)</TrackMetaData>", r))
         );
     }
 
