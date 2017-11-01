@@ -34,9 +34,9 @@ public class SonosDevice {
      * @throws IOException
      * @throws SonosControllerException
      */
-    public void playUri(String uri, String meta) throws IOException, SonosControllerException {
+    public void playUri(String uri, String metadata) throws IOException, SonosControllerException {
         CommandBuilder.transport("SetAVTransportURI").put("InstanceID", "0").put("CurrentURI", uri)
-                .put("CurrentURIMetaData", meta).executeOn(this.ip);
+                .put("CurrentURIMetaData", metadata).executeOn(this.ip);
         this.play();
     }
 
@@ -48,7 +48,28 @@ public class SonosDevice {
         if(queueIndex < 0) { throw new IllegalArgumentException("Queue index cannot be < 0."); }
         this.playUri("x-rincon-queue:" + this.getSpeakerInfo().getLocalUID() + "#0", "");
         CommandBuilder.transport("Seek").put("InstanceID", "0").put("Unit", "TRACK_NR")
-                .put("Target", String.valueOf(queueIndex + 1)).executeOn(this.ip);
+                .put("Target", String.valueOf(queueIndex)).executeOn(this.ip);
+        this.play();
+    }
+
+    /**
+     * Pause current music, Play URI and resume (very useful for announcement).
+     * clip is a blocking method. Take care !
+     * @param uri URI of a stream to be played.
+     * @param metadata The track metadata to show in the player (DIDL format).
+     * @throws IOException
+     * @throws SonosControllerException
+     * @throws InterruptedException
+     */
+    public void clip(String uri, String metadata) throws IOException, SonosControllerException, InterruptedException {
+        TrackInfo previous = this.getCurrentTrackInfo();
+        this.playUri(uri, metadata);
+        while (this.getPlayState() != PlayState.STOPPED) {
+            Thread.sleep(500);
+        }
+        this.playUri("x-rincon-queue:" + this.getSpeakerInfo().getLocalUID() + "#0", "");
+        this.playFromQueue(previous.getQueueIndex());
+        this.seek(previous.getPosition());
         this.play();
     }
 

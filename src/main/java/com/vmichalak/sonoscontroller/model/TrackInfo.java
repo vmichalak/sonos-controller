@@ -1,22 +1,22 @@
 package com.vmichalak.sonoscontroller.model;
 
 public class TrackInfo {
-    private final int playlistPosition;
+    private final int queueIndex;
     private final String duration;
     private final String position;
     private final String uri;
     private final TrackMetadata metadata;
 
-    public TrackInfo(int playlistPosition, String duration, String position, String uri, TrackMetadata metadata) {
-        this.playlistPosition = playlistPosition;
+    public TrackInfo(int queueIndex, String duration, String position, String uri, TrackMetadata metadata) {
+        this.queueIndex = queueIndex;
         this.duration = duration;
         this.position = position;
         this.uri = uri;
         this.metadata = metadata;
     }
 
-    public int getPlaylistPosition() {
-        return playlistPosition;
+    public int getQueueIndex() {
+        return queueIndex;
     }
 
     public String getDuration() {
@@ -38,7 +38,7 @@ public class TrackInfo {
     @Override
     public String toString() {
         return "TrackInfo{" +
-                "playlistPosition=" + playlistPosition +
+                "queueIndex=" + queueIndex +
                 ", duration='" + duration + '\'' +
                 ", position='" + position + '\'' +
                 ", uri='" + uri + '\'' +
