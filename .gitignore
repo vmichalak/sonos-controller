@@ -47,3 +47,6 @@ gradle-app.setting
 
 # Cache of project
 .gradletasknamecache
+
+# Sphinx
+doc/_build
