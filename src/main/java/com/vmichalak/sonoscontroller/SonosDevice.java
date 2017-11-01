@@ -4,8 +4,7 @@ import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 import com.vmichalak.sonoscontroller.model.*;
 
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -455,6 +454,23 @@ public class SonosDevice {
     //</editor-fold>
 
     //<editor-fold desc="CONTENT DIRECTORY">
+
+    public List<TrackMetadata> getQueue(int startingIndex, int requestedCount) throws IOException, SonosControllerException {
+        String r = CommandBuilder.contentDirectory("Browse")
+                .put("ObjectID", "Q:0")
+                .put("BrowseFlag", "BrowseDirectChildren")
+                .put("Filter", "dc:title,res,dc:creator,upnp:artist,upnp:album,upnp:albumArtURI")
+                .put("StartingIndex", String.valueOf(startingIndex))
+                .put("RequestedCount", String.valueOf(requestedCount))
+                .put("SortCriteria", "")
+                .executeOn(this.ip);
+        List<String> itemsNonParsed = ParserHelper.findAll("<item .+?(?=>)>(.+?(?=</item>))", r);
+        List<TrackMetadata> itemsParsed = new ArrayList<TrackMetadata>();
+        for (String s : itemsNonParsed) {
+            itemsParsed.add(TrackMetadata.parse(s));
+        }
+        return itemsParsed;
+    }
 
     //</editor-fold>
 

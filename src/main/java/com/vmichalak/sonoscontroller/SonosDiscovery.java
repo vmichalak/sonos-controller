@@ -5,6 +5,7 @@ import com.vmichalak.protocol.ssdp.SSDPClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SonosDiscovery {
@@ -21,7 +22,7 @@ public class SonosDiscovery {
         List<Device> source = SSDPClient.discover(1000, "urn:schemas-upnp-org:device:ZonePlayer:1");
         ArrayList<SonosDevice> output = new ArrayList<SonosDevice>();
         for (Device device : source) { output.add(new SonosDevice(device.getIPAddress())); }
-        return output;
+        return Collections.unmodifiableList(output);
     }
 
     /**

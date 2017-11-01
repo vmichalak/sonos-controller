@@ -111,7 +111,7 @@ class CommandBuilder {
         Request request = new Request.Builder().url(uri).addHeader("Content-Type", "text/xml")
                 .addHeader("SOAPACTION", this.service + "#" + this.action).post(body).build();
         String response = getHttpClient().newCall(request).execute().body().string();
-        response = StringEscapeUtils.unescapeXml(response);
+        response = unescape(response);
         handleError(ip, response);
         return response;
     }
@@ -136,6 +136,15 @@ class CommandBuilder {
     private static OkHttpClient getHttpClient() {
         if(httpClient == null) { httpClient = new OkHttpClient(); }
         return httpClient;
+    }
+
+    // This method correct some strange behaviour (multiple escaped string) with the getQueue method.
+    private static String unescape(String s) {
+        String tmp = s;
+        while (isEscaped(tmp)) {
+            tmp = StringEscapeUtils.unescapeXml(tmp);
+        }
+        return tmp;
     }
 
     private static boolean isEscaped(String s) {

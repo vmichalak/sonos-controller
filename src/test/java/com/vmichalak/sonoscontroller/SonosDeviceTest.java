@@ -511,6 +511,70 @@ public class SonosDeviceTest {
     }
 
     @Test
+    public void getQueue() throws Exception {
+        String response = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+                "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
+                "<u:BrowseResponse xmlns:u=\"urn:schemas-upnp-org:service:ContentDirectory:1\"><Result>" +
+                "<DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" " +
+                "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" " +
+                "xmlns:r=\"urn:schemas-rinconnetworks-com:metadata-1-0/\" " +
+                "xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\">" +
+                "<item id=\"Q:0/1\" parentID=\"Q:0\" restricted=\"true\">" +
+                "<res protocolInfo=\"sonos.com-spotify:*:audio/x-spotify:*\" duration=\"0:03:02\">" +
+                "x-sonos-spotify:spotify%3atrack%3a5EjG2jgzovOhN3OzWCcbdu?sid=9&flags=8224&sn=3</res>" +
+                "<upnp:albumArtURI>/getaa?s=1&u=x-sonos-spotify%3aspotify%253atrack%253a5EjG2jgzovOhN3OzWCcbdu%3fsid" +
+                "%3d9%26flags%3d8224%26sn%3d3</upnp:albumArtURI><dc:title>Gravity</dc:title><upnp:class>" +
+                "object.item.audioItem.musicTrack</upnp:class><dc:creator>Leo Stannard</dc:creator><upnp:album>" +
+                "Gravity</upnp:album></item><item id=\"Q:0/2\" parentID=\"Q:0\" restricted=\"true\">" +
+                "<res protocolInfo=\"sonos.com-spotify:*:audio/x-spotify:*\" duration=\"0:03:38\">" +
+                "x-sonos-spotify:spotify%3atrack%3a6bTrd6giv3vHJ349x6Tj8H?sid=9&flags=8224&sn=3</res>" +
+                "<upnp:albumArtURI>/getaa?s=1&u=x-sonos-spotify%3aspotify%253atrack%253a6bTrd6giv3vHJ349x6Tj8H%3fsi" +
+                "d%3d9%26flags%3d8224%26sn%3d3</upnp:albumArtURI><dc:title>Bang Bang</dc:title><upnp:class>" +
+                "object.item.audioItem.musicTrack</upnp:class><dc:creator>Mani</dc:creator><upnp:album>" +
+                "Heroes Of Today</upnp:album></item><item id=\"Q:0/3\" parentID=\"Q:0\" restricted=\"true\">" +
+                "<res protocolInfo=\"sonos.com-spotify:*:audio/x-spotify:*\" duration=\"0:02:44\">" +
+                "x-sonos-spotify:spotify%3atrack%3a1MBcpMBIkeRwTbXHUB8rdT?sid=9&flags=8224&sn=3</res>" +
+                "<upnp:albumArtURI>/getaa?s=1&u=x-sonos-spotify%3aspotify%253atrack%253a1MBcpMBIkeRwTbXHUB8rdT%3f" +
+                "sid%3d9%26flags%3d8224%26sn%3d3</upnp:albumArtURI><dc:title>Thinkin' Bout You (Radio Edit)" +
+                "</dc:title><upnp:class>object.item.audioItem.musicTrack</upnp:class><dc:creator>Ben DJ" +
+                "</dc:creator><upnp:album>Thinkin' Bout You</upnp:album></item><item id=\"Q:0/4\" parentID=\"Q:0\" " +
+                "restricted=\"true\"><res protocolInfo=\"sonos.com-spotify:*:audio/x-spotify:*\" " +
+                "duration=\"0:02:36\">x-sonos-spotify:spotify%3atrack%3a4IzE9UQLiqlSR5mmSgWQny?sid=9&flags=8224" +
+                "&sn=3</res><upnp:albumArtURI>/getaa?s=1&u=x-sonos-spotify%3aspotify%253atrack%253a4IzE9UQLiqlSR5m" +
+                "mSgWQny%3fsid%3d9%26flags%3d8224%26sn%3d3</upnp:albumArtURI><dc:title>Can’t</dc:title><upnp:class>" +
+                "object.item.audioItem.musicTrack</upnp:class><dc:creator>Naaz</dc:creator><upnp:album>Can't" +
+                "</upnp:album></item><item id=\"Q:0/5\" parentID=\"Q:0\" restricted=\"true\">" +
+                "<res protocolInfo=\"sonos.com-spotify:*:audio/x-spotify:*\" duration=\"0:03:23\">" +
+                "x-sonos-spotify:spotify%3atrack%3a2rOi4xsX0M04hiYnswIX9E?sid=9&flags=8224&sn=3</res>" +
+                "<upnp:albumArtURI>/getaa?s=1&u=x-sonos-spotify%3aspotify%253atrack%253a2rOi4xsX0M04hiYnswIX9E%3fsid" +
+                "%3d9%26flags%3d8224%26sn%3d3</upnp:albumArtURI><dc:title>Drunk In The Morning</dc:title>" +
+                "<upnp:class>object.item.audioItem.musicTrack</upnp:class><dc:creator>Lukas Graham</dc:creator>" +
+                "<upnp:album>Lukas Graham (Blue Album)</upnp:album></item><item id=\"Q:0/6\" parentID=\"Q:0\" " +
+                "restricted=\"true\"><res protocolInfo=\"sonos.com-spotify:*:audio/x-spotify:*\" " +
+                "duration=\"0:03:10\">x-sonos-spotify:spotify%3atrack%3a6kRLO37FUloOrKiv9VpkaN?sid=9&flags=8224" +
+                "&sn=3</res><upnp:albumArtURI>/getaa?s=1&u=x-sonos-spotify%3aspotify%253atrack%253a6kRLO37FUloOrKi" +
+                "v9VpkaN%3fsid%3d9%26flags%3d8224%26sn%3d3</upnp:albumArtURI><dc:title>Up All Night</dc:title>" +
+                "<upnp:class>object.item.audioItem.musicTrack</upnp:class><dc:creator>Beck</dc:creator><upnp:album>" +
+                "Up All Night</upnp:album></item><item id=\"Q:0/7\" parentID=\"Q:0\" restricted=\"true\">" +
+                "<res protocolInfo=\"sonos.com-spotify:*:audio/x-spotify:*\" duration=\"0:02:27\">x-sonos-spotify" +
+                ":spotify%3atrack%3a6uNFvdRGAtUuVIP6IOMlRs?sid=9&flags=8224&sn=3</res><upnp:albumArtURI>/getaa?s=1" +
+                "&u=x-sonos-spotify%3aspotify%253atrack%253a6uNFvdRGAtUuVIP6IOMlRs%3fsid%3d9%26flags%3d8224%26sn%3d3" +
+                "</upnp:albumArtURI><dc:title>Words</dc:title><upnp:class>object.item.audioItem.musicTrack" +
+                "</upnp:class><dc:creator>Naaz</dc:creator><upnp:album>Words</upnp:album></item></DIDL-Lite>" +
+                "</Result><NumberReturned>7</NumberReturned><TotalMatches>7</TotalMatches><UpdateID>26</UpdateID>" +
+                "</u:BrowseResponse></s:Body></s:Envelope>";
+        MockHelper.mockCommandBuilder(response);
+        SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
+        assertEquals("TrackMetadata{title='Gravity', creator='Leo Stannard', albumArtist='', album='Gravity', " +
+                "albumArtURI='/getaa?s=1&u=x-sonos-spotify%3aspotify%253atrack%253a5EjG2jgzovOhN3OzWCcbdu%3fsi" +
+                "d%3d9%26flags%3d8224%26sn%3d3'}", sonosDevice.getQueue(0,7).get(0).toString());
+        assertEquals("TrackMetadata{title='Thinkin' Bout You (Radio Edit)', creator='Ben DJ', albumArtist='', " +
+                "album='Thinkin' Bout You', albumArtURI='/getaa?s=1&u=x-sonos-spotify%3aspotify%253atrack%253a" +
+                "1MBcpMBIkeRwTbXHUB8rdT%3fsid%3d9%26flags%3d8224%26sn%3d3'}",
+                sonosDevice.getQueue(0,7).get(2).toString());
+    }
+
+    @Test
     public void checkCommandBuilderUsage() throws Exception {
         CommandBuilder commandBuilderMock = MockHelper.mockCommandBuilder("");
 
