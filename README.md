@@ -35,10 +35,6 @@ git submodule init
 git submodule update
 ```
 
-## To-Do
-
-[Link to the Trello](https://trello.com/b/0r87xvWy/sonos-controller)
-
 ## Contributors
 
 The current lead maintainer is [Valentin Michalak](https://github.com/vmichalak) [(twitter)](https://twitter.com/valmichalak)
