@@ -1,10 +1,10 @@
 Sonos Controller 0.1 release notes
-----------------------------------
+==================================
 
 The very first public release of Sonos Controller library.
 
 New methods
-^^^^^^^^^^^
+-----------
 
 - SonosDiscovery
     - discover()
@@ -61,6 +61,6 @@ New methods
     - unjoin()
 
 Coming next
-^^^^^^^^^^^
+-----------
 
 For the next release, it is planned to work actively on a documentation to help users.
