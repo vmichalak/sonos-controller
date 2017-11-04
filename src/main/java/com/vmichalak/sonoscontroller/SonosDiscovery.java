@@ -2,6 +2,7 @@ package com.vmichalak.sonoscontroller;
 
 import com.vmichalak.protocol.ssdp.Device;
 import com.vmichalak.protocol.ssdp.SSDPClient;
+import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,4 +49,22 @@ public class SonosDiscovery {
         return new SonosDevice(source.getIPAddress());
     }
 
+    /**
+     * Discover one SONOS speakers on network using SSDP (Simple Service Discovery Protocol) by name.
+     * @param name Sonos Speaker name.
+     * @return Sonos speaker (or null if no speaker was found)
+     * @throws IOException
+     */
+    public static SonosDevice discoverByName(String name) throws IOException {
+        name = name.toLowerCase();
+        List<SonosDevice> sonosDevices = SonosDiscovery.discover();
+        for(SonosDevice sonosDevice : sonosDevices) {
+            try {
+                if(sonosDevice.getZoneName().toLowerCase().equals(name)) {
+                    return sonosDevice;
+                }
+            } catch (SonosControllerException e) { }
+        }
+        return null;
+    }
 }
