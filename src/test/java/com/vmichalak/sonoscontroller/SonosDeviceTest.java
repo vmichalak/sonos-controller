@@ -2,10 +2,7 @@ package com.vmichalak.sonoscontroller;
 
 import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
-import com.vmichalak.sonoscontroller.model.PlayMode;
-import com.vmichalak.sonoscontroller.model.PlayState;
-import com.vmichalak.sonoscontroller.model.SonosSpeakerInfo;
-import com.vmichalak.sonoscontroller.model.SonosZoneInfo;
+import com.vmichalak.sonoscontroller.model.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -80,6 +77,12 @@ public class SonosDeviceTest {
                         "<u:GetTrebleResponse xmlns:u=\"urn:schemas-upnp-org:service:RenderingControl:1\">" +
                         "<CurrentTreble>-1</CurrentTreble></u:GetTrebleResponse></s:Body></s:Envelope>");
         assertEquals(-1, new SonosDevice("127.0.0.1").getTreble());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setInvalidQueueIndex() throws Exception {
+        MockHelper.mockCommandBuilder("");
+        new SonosDevice("127.0.0.1").playFromQueue(-1);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -581,7 +584,7 @@ public class SonosDeviceTest {
         SonosDevice sonosDevice = new SonosDevice("127.0.0.1");
 
         sonosDevice.play();
-        sonosDevice.playUri("http://test.com", "");
+        sonosDevice.playUri("http://test.com", new TrackMetadata("", "", "", "", ""));
         sonosDevice.pause();
         sonosDevice.stop();
         sonosDevice.seek("01:01:01");
@@ -593,15 +596,19 @@ public class SonosDeviceTest {
         sonosDevice.unjoin();
         sonosDevice.setVolume(100);
         sonosDevice.setMute(true);
+        sonosDevice.setMute(false);
+        sonosDevice.switchMute();
         sonosDevice.setLoudness(true);
+        sonosDevice.setLoudness(false);
         sonosDevice.setTreble(8);
         sonosDevice.setNightMode(true);
         sonosDevice.setZoneName("test");
         sonosDevice.setLedState(true);
         sonosDevice.setLedState(false);
         sonosDevice.setDialogMode(true);
+        sonosDevice.setDialogMode(false);
 
-        Mockito.verify(commandBuilderMock, Mockito.times(21)).executeOn("127.0.0.1");
+        Mockito.verify(commandBuilderMock, Mockito.times(26)).executeOn("127.0.0.1");
     }
 
     @Test

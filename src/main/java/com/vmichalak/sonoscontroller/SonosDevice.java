@@ -30,15 +30,18 @@ public class SonosDevice {
     /**
      * Play a given stream. Pauses the queue.
      * @param uri URI of a stream to be played.
-     * @param meta The track metadata to show in the player (DIDL format).
+     * @param metadata The track metadata to show in the player (DIDL format).
      * @throws IOException
      * @throws SonosControllerException
      */
-    public void playUri(String uri, String metadata) throws IOException, SonosControllerException {
+    public void playUri(String uri, TrackMetadata metadata) throws IOException, SonosControllerException {
+        String metadataString = "";
+        if(metadata != null) { metadataString = metadata.toDIDL(); }
         CommandBuilder.transport("SetAVTransportURI").put("InstanceID", "0").put("CurrentURI", uri)
-                .put("CurrentURIMetaData", metadata).executeOn(this.ip);
+                .put("CurrentURIMetaData", metadataString).executeOn(this.ip);
         this.play();
     }
+
 
     /**
      * Play an item from the queue.
@@ -46,7 +49,7 @@ public class SonosDevice {
      */
     public void playFromQueue(int queueIndex) throws IOException, SonosControllerException {
         if(queueIndex < 0) { throw new IllegalArgumentException("Queue index cannot be < 0."); }
-        this.playUri("x-rincon-queue:" + this.getSpeakerInfo().getLocalUID() + "#0", "");
+        this.playUri("x-rincon-queue:" + this.getSpeakerInfo().getLocalUID() + "#0", null);
         CommandBuilder.transport("Seek").put("InstanceID", "0").put("Unit", "TRACK_NR")
                 .put("Target", String.valueOf(queueIndex)).executeOn(this.ip);
         this.play();
@@ -61,12 +64,12 @@ public class SonosDevice {
      * @throws SonosControllerException
      * @throws InterruptedException
      */
-    public void clip(String uri, String metadata) throws IOException, SonosControllerException, InterruptedException {
+    public void clip(String uri, TrackMetadata metadata) throws IOException, SonosControllerException, InterruptedException {
         PlayState previousState = this.getPlayState();
         TrackInfo previous = this.getCurrentTrackInfo();
         this.playUri(uri, metadata);
         while (!this.getPlayState().equals(PlayState.STOPPED)) { Thread.sleep(500); }
-        this.playUri("x-rincon-queue:" + this.getSpeakerInfo().getLocalUID() + "#0", "");
+        this.playUri("x-rincon-queue:" + this.getSpeakerInfo().getLocalUID() + "#0", null);
         CommandBuilder.transport("Seek").put("InstanceID", "0").put("Unit", "TRACK_NR")
                 .put("Target", String.valueOf(previous.getQueueIndex())).executeOn(this.ip);
         this.seek(previous.getPosition());
@@ -138,9 +141,11 @@ public class SonosDevice {
      * @throws IOException
      * @throws SonosControllerException
      */
-    public void addToQueue(String uri, String metadata) throws IOException, SonosControllerException {
+    public void addToQueue(String uri, TrackMetadata metadata) throws IOException, SonosControllerException {
+        String metadataString = "";
+        if(metadata != null) { metadataString = metadata.toDIDL(); }
         CommandBuilder.transport("AddURIToQueue").put("InstanceID", "0").put("EnqueuedURI", uri)
-                .put("EnqueuedURIMetaData", metadata).put("DesiredFirstTrackNumberEnqueued", "0")
+                .put("EnqueuedURIMetaData", metadataString).put("DesiredFirstTrackNumberEnqueued", "0")
                 .put("EnqueueAsNext", "1").executeOn(this.ip);
     }
 

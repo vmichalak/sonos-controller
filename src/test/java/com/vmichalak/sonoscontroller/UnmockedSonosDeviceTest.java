@@ -4,6 +4,7 @@ import com.vmichalak.sonoscontroller.exception.SonosControllerException;
 import com.vmichalak.sonoscontroller.exception.UPnPSonosControllerException;
 import com.vmichalak.sonoscontroller.model.PlayMode;
 import com.vmichalak.sonoscontroller.model.PlayState;
+import com.vmichalak.sonoscontroller.model.TrackMetadata;
 import com.vmichalak.sonoscontroller.testcategory.UnmockedTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,23 +51,29 @@ public class UnmockedSonosDeviceTest {
     }
 
     @Test
+    public void testPlayUri() throws IOException, SonosControllerException, InterruptedException {
+        sonosDevice.playUri("https://allthingsaudio.wikispaces.com/file/view/Shuffle%20for%20K.M.mp3/139190697/Shuffle%20for%20K.M.mp3",
+                new TrackMetadata("Shuffle Sample", "All Things Studio", "All Things Studio", "Integration tests with good sample music", "https://allthingsaudio.wikispaces.com/space/showlogo/1398536774/logo.png"));
+    }
+
+    @Test
     public void testPlayMode() throws IOException, SonosControllerException, InterruptedException {
         try {
             PlayMode initialMode = sonosDevice.getPlayMode();
             sonosDevice.setPlayMode(PlayMode.NORMAL);
-            Thread.sleep(100);
+            Thread.sleep(250);
             assertEquals(PlayMode.NORMAL, sonosDevice.getPlayMode());
             sonosDevice.setPlayMode(PlayMode.REPEAT_ALL);
-            Thread.sleep(100);
+            Thread.sleep(250);
             assertEquals(PlayMode.REPEAT_ALL, sonosDevice.getPlayMode());
             sonosDevice.setPlayMode(PlayMode.REPEAT_ONE);
-            Thread.sleep(100);
+            Thread.sleep(250);
             assertEquals(PlayMode.REPEAT_ONE, sonosDevice.getPlayMode());
             sonosDevice.setPlayMode(PlayMode.SHUFFLE);
-            Thread.sleep(100);
+            Thread.sleep(250);
             assertEquals(PlayMode.SHUFFLE, sonosDevice.getPlayMode());
             sonosDevice.setPlayMode(PlayMode.SHUFFLE_NOREPEAT);
-            Thread.sleep(100);
+            Thread.sleep(250);
             assertEquals(PlayMode.SHUFFLE_NOREPEAT, sonosDevice.getPlayMode());
             sonosDevice.setPlayMode(initialMode);
         } catch (UPnPSonosControllerException e) {

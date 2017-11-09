@@ -20,6 +20,7 @@ public class TrackMetadataTest {
                         "<r:tiid>ed24b408301ad5d0e5271e1581023364</r:tiid>" +
                     "</item>" +
                 "</DIDL-Lite>";
+
         TrackMetadata parsedMetadata = TrackMetadata.parse(metadataString);
         assertEquals("Drunk In The Morning", parsedMetadata.getTitle());
         assertEquals("Lukas Graham", parsedMetadata.getCreator());
@@ -27,5 +28,6 @@ public class TrackMetadataTest {
         assertEquals("Lukas Graham (Blue Album)", parsedMetadata.getAlbum());
         assertEquals("https://i.scdn.co/image/581f4402e14ac0f839f7b50dff4fdd0bbc02bee5", parsedMetadata.getAlbumArtURI());
         assertEquals("TrackMetadata{title='Drunk In The Morning', creator='Lukas Graham', albumArtist='Lukas Graham', album='Lukas Graham (Blue Album)', albumArtURI='https://i.scdn.co/image/581f4402e14ac0f839f7b50dff4fdd0bbc02bee5'}", parsedMetadata.toString());
+        assertEquals("<DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" xmlns:r=\"urn:schemas-rinconnetworks-com:metadata-1-0/\" xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\"><item><dc:title>Drunk In The Morning</dc:title><dc:creator>Lukas Graham</dc:creator><dc:albumArtist>Lukas Graham</dc:albumArtist><upnp:album>Lukas Graham (Blue Album)</upnp:album><upnp:albumArtURI>https://i.scdn.co/image/581f4402e14ac0f839f7b50dff4fdd0bbc02bee5</upnp:albumArtURI></item></DIDL-Lite>", parsedMetadata.toDIDL());
     }
 }
