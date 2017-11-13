@@ -18,6 +18,6 @@ public class MockHelper {
 
     public static void mockCommandBuilderDownloadSpeakerInfo(String output) throws Exception {
         PowerMockito.mockStatic(CommandBuilder.class);
-        PowerMockito.when(CommandBuilder.downloadSpeakerInfo(anyString())).thenReturn(output);
+        PowerMockito.when(CommandBuilder.download(anyString(), anyString())).thenReturn(output);
     }
 }

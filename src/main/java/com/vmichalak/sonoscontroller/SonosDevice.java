@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class SonosDevice {
 
@@ -492,12 +493,40 @@ public class SonosDevice {
 
     //<editor-fold desc="DEVICE">
 
+    /**
+     * Get the zone name. (for exemple: "Bedroom + 1", "Living Room", ...)
+     * @return the zone name.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
     public String getZoneName() throws IOException, SonosControllerException {
-        return this.getSpeakerInfo().getZoneName();
+        return this.getZoneGroupState().getName();
     }
 
-    public void setZoneName(String zoneName) throws IOException, SonosControllerException {
-        CommandBuilder.device("SetZoneAttributes").put("DesiredZoneName", zoneName).put("DesiredIcon", "")
+    /**
+     * Get the room name. (for exemple: "Bedroom", "Living Room", ...)
+     * @return the room name.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public String getRoomName() throws IOException, SonosControllerException {
+        String r = CommandBuilder.download(this.ip, "xml/device_description.xml");
+        r = Pattern.compile("<deviceList>.*</deviceList>", Pattern.DOTALL).matcher(r).replaceFirst("");
+        return ParserHelper.findOne("<roomName>(.*)</roomName>", r);
+    }
+
+    /**
+     * Get the device name. (for exemple: "Bedroom (L)", "Bedroom (R)", ...)
+     * @return the device name.
+     * @throws IOException
+     * @throws SonosControllerException
+     */
+    public String getDeviceName() throws IOException, SonosControllerException {
+        return this.getSpeakerInfo().getDeviceName();
+    }
+
+    public void setRoomName(String roomName) throws IOException, SonosControllerException {
+        CommandBuilder.device("SetZoneAttributes").put("DesiredZoneName", roomName).put("DesiredIcon", "")
                 .put("DesiredConfiguration", "").executeOn(this.ip);
     }
 
@@ -569,9 +598,9 @@ public class SonosDevice {
      * @throws SonosControllerException
      */
     public SonosSpeakerInfo getSpeakerInfo() throws IOException, SonosControllerException {
-        String responseString = CommandBuilder.downloadSpeakerInfo(this.ip);
+        String responseString = CommandBuilder.download(ip, "status/zp");
 
-        String zoneName                 = ParserHelper.findOne("<ZoneName>(.*)</ZoneName>", responseString);
+        String deviceName               = ParserHelper.findOne("<ZoneName>(.*)</ZoneName>", responseString);
         String zoneIcon                 = ParserHelper.findOne("<ZoneIcon>(.*)</ZoneIcon>", responseString);
         String configuration            = ParserHelper.findOne("<Configuration>(.*)</Configuration>", responseString);
         String localUID                 = ParserHelper.findOne("<LocalUID>(.*)</LocalUID>", responseString);
@@ -609,7 +638,7 @@ public class SonosDevice {
         String regState                 = ParserHelper.findOne("<RegState>(.*)</RegState>", responseString);
         String customerID               = ParserHelper.findOne("<CustomerID>(.*)</CustomerID>", responseString);
 
-        return new SonosSpeakerInfo(zoneName, zoneIcon, configuration, localUID, serialNumber, softwareVersion,
+        return new SonosSpeakerInfo(deviceName, zoneIcon, configuration, localUID, serialNumber, softwareVersion,
                 softwareDate, softwareScm, minCompatibleVersion, legacyCompatibleVersion, hardwareVersion, dspVersion,
                 hwFlags, hwFeatures, variant, generalFlags, ipAddress, macAddress, copyright, extraInfo, htAudioInCode,
                 idxTrk, mdp2Ver, mdp3Ver, relBuild, whitelistBuild, prodUnit, fuseCfg, revokeFuse, authFlags,

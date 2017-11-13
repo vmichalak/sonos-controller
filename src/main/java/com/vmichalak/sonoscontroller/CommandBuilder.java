@@ -83,8 +83,8 @@ class CommandBuilder {
         return new CommandBuilder(ZONE_GROUP_TOPOLOGY_ENDPOINT, ZONE_GROUP_TOPOLOGY_SERVICE, action);
     }
 
-    public static String downloadSpeakerInfo(String ip) throws IOException, SonosControllerException {
-        String uri = "http://" + ip + ":" + SOAP_PORT + "/status/zp";
+    public static String download(String ip, String url) throws IOException, SonosControllerException {
+        String uri = "http://" + ip + ":" + SOAP_PORT + "/" + url;
         Request request = new Request.Builder().url(uri).get().build();
         String response = getHttpClient().newCall(request).execute().body().string();
         handleError(ip, response);
