@@ -40,7 +40,7 @@ public class SonosZoneInfo {
                     devices.add(device);
                 }
             }
-            catch (IOException e) { }
+            catch (IOException e) { /* ignored */ }
         }
         return devices;
     }

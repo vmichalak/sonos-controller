@@ -10,19 +10,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 class CommandBuilder {
-    private final static int    SOAP_PORT                    = 1400;
-    private final static String TRANSPORT_ENDPOINT           = "/MediaRenderer/AVTransport/Control";
-    private final static String TRANSPORT_SERVICE            = "urn:schemas-upnp-org:service:AVTransport:1";
-    private final static String RENDERING_ENDPOINT           = "/MediaRenderer/RenderingControl/Control";
-    private final static String RENDERING_SERVICE            = "urn:schemas-upnp-org:service:RenderingControl:1";
-    private final static String DEVICE_ENDPOINT              = "/DeviceProperties/Control";
-    private final static String DEVICE_SERVICE               = "urn:schemas-upnp-org:service:DeviceProperties:1";
-    private final static String CONTENT_DIRECTORY_ENDPOINT   = "/MediaServer/ContentDirectory/Control";
-    private final static String CONTENT_DIRECTORY_SERVICE    = "urn:schemas-upnp-org:service:ContentDirectory:1";
-    private final static String ZONE_GROUP_TOPOLOGY_ENDPOINT = "/ZoneGroupTopology/Control";
-    private final static String ZONE_GROUP_TOPOLOGY_SERVICE  = "urn:upnp-org:serviceId:ZoneGroupTopology";
+    private static final int    SOAP_PORT                    = 1400;
+    private static final String TRANSPORT_ENDPOINT           = "/MediaRenderer/AVTransport/Control";
+    private static final String TRANSPORT_SERVICE            = "urn:schemas-upnp-org:service:AVTransport:1";
+    private static final String RENDERING_ENDPOINT           = "/MediaRenderer/RenderingControl/Control";
+    private static final String RENDERING_SERVICE            = "urn:schemas-upnp-org:service:RenderingControl:1";
+    private static final String DEVICE_ENDPOINT              = "/DeviceProperties/Control";
+    private static final String DEVICE_SERVICE               = "urn:schemas-upnp-org:service:DeviceProperties:1";
+    private static final String CONTENT_DIRECTORY_ENDPOINT   = "/MediaServer/ContentDirectory/Control";
+    private static final String CONTENT_DIRECTORY_SERVICE    = "urn:schemas-upnp-org:service:ContentDirectory:1";
+    private static final String ZONE_GROUP_TOPOLOGY_ENDPOINT = "/ZoneGroupTopology/Control";
+    private static final String ZONE_GROUP_TOPOLOGY_SERVICE  = "urn:upnp-org:serviceId:ZoneGroupTopology";
 
-    private final static HashMap<Integer, String> ERROR_DESCRIPTION_MAP = new HashMap<Integer, String>();
+    private static final HashMap<Integer, String> ERROR_DESCRIPTION_MAP = new HashMap<Integer, String>();
 
     static {
         ERROR_DESCRIPTION_MAP.put(400, "Bad Request");

@@ -56,14 +56,13 @@ public class SonosDiscovery {
      * @throws IOException
      */
     public static SonosDevice discoverByName(String name) throws IOException {
-        name = name.toLowerCase();
         List<SonosDevice> sonosDevices = SonosDiscovery.discover();
         for(SonosDevice sonosDevice : sonosDevices) {
             try {
-                if(sonosDevice.getZoneName().toLowerCase().equals(name)) {
+                if(sonosDevice.getZoneName().equalsIgnoreCase(name)) {
                     return sonosDevice;
                 }
-            } catch (SonosControllerException e) { }
+            } catch (SonosControllerException e) { /* ignored */ }
         }
         return null;
     }
