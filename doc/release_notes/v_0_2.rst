@@ -1,0 +1,6 @@
+Sonos Controller 0.2 release notes
+==================================
+
+# Enhancement
+
+    - #24 - Difference between getZoneName() / getRoomName() / getDeviceName() 
