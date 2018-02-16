@@ -1,7 +1,6 @@
 package com.vmichalak.sonoscontroller.model;
 
 import com.vmichalak.sonoscontroller.ParserHelper;
-import org.apache.commons.text.StringEscapeUtils;
 
 public class TrackMetadata {
     private final String title;

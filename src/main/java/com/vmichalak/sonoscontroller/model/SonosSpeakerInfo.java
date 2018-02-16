@@ -1,7 +1,7 @@
 package com.vmichalak.sonoscontroller.model;
 
 public class SonosSpeakerInfo {
-    private final String zoneName;
+    private final String deviceName;
     private final String zoneIcon;
     private final String configuration;
     private final String localUID;
@@ -35,7 +35,7 @@ public class SonosSpeakerInfo {
     private final String regState;
     private final String customerID;
 
-    public SonosSpeakerInfo(String zoneName, String zoneIcon, String configuration, String localUID,
+    public SonosSpeakerInfo(String deviceName, String zoneIcon, String configuration, String localUID,
                             String serialNumber, String softwareVersion, String softwareDate, String softwareScm,
                             String minCompatibleVersion, String legacyCompatibleVersion, String hardwareVersion,
                             String dspVersion, String hwFlags, String hwFeatures, String variant, String generalFlags,
@@ -43,7 +43,7 @@ public class SonosSpeakerInfo {
                             String htAudioInCode, String idxTrk, String mdp2Ver, String mdp3Ver, String relBuild,
                             String whitelistBuild, String prodUnit, String fuseCfg, String revokeFuse, String authFlags,
                             String swFeatures, String regState, String customerID) {
-        this.zoneName = zoneName;
+        this.deviceName = deviceName;
         this.zoneIcon = zoneIcon;
         this.configuration = configuration;
         this.localUID = localUID;
@@ -78,8 +78,8 @@ public class SonosSpeakerInfo {
         this.customerID = customerID;
     }
 
-    public String getZoneName() {
-        return zoneName;
+    public String getDeviceName() {
+        return deviceName;
     }
 
     public String getZoneIcon() {
@@ -213,7 +213,7 @@ public class SonosSpeakerInfo {
     @Override
     public String toString() {
         return "SonosSpeakerInfo{" +
-                "zoneName='" + zoneName + '\'' +
+                "deviceName='" + deviceName + '\'' +
                 ", zoneIcon='" + zoneIcon + '\'' +
                 ", configuration='" + configuration + '\'' +
                 ", localUID='" + localUID + '\'' +
