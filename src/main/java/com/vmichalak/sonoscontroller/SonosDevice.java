@@ -16,6 +16,14 @@ public class SonosDevice {
         this.ip = ip;
     }
 
+    /**
+     * Gets the remote IP address of this device.
+     * @return Returns the remote IP address of the device.
+     */
+    public String getIpAddress() {
+        return this.ip;
+    }
+
     //<editor-fold desc="AV TRANSPORT">
 
     /**

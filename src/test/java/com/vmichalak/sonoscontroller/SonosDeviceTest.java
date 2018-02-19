@@ -23,6 +23,12 @@ import static org.junit.Assert.assertEquals;
 public class SonosDeviceTest {
 
     @Test
+    public void getIpAddress() {
+        SonosDevice device = new SonosDevice("127.0.0.1");
+        assertEquals("127.0.0.1", device.getIpAddress());
+    }
+
+    @Test
     public void getPlayMode() throws Exception {
         MockHelper.mockCommandBuilder("<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
                 "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
