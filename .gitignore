@@ -47,3 +47,9 @@ gradle-app.setting
 
 # Cache of project
 .gradletasknamecache
+
+# Eclipse
+/.classpath
+/.project
+/.settings/
+/bin/
