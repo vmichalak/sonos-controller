@@ -20,6 +20,12 @@ import static org.junit.Assert.assertEquals;
 public class SonosDeviceTest {
 
     @Test
+    public void getIpAddress() {
+        SonosDevice device = new SonosDevice("127.0.0.1");
+        assertEquals("127.0.0.1", device.getIpAddress());
+    }
+
+    @Test
     public void getPlayMode() throws Exception {
         MockHelper.mockCommandBuilder("<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
                 "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>" +
@@ -247,7 +253,7 @@ public class SonosDeviceTest {
                 "</ZPInfo></ZPSupportInfo>");
 
         SonosSpeakerInfo speakerInfo = new SonosDevice("127.0.0.1").getSpeakerInfo();
-        assertEquals("Bedroom",                                         speakerInfo.getZoneName());
+        assertEquals("Bedroom",                                         speakerInfo.getDeviceName());
         assertEquals("x-rincon-roomicon:den",                           speakerInfo.getZoneIcon());
         assertEquals("1",                                               speakerInfo.getConfiguration());
         assertEquals("RINCON_99999999AAAAAAAAA",                        speakerInfo.getLocalUID());
@@ -286,7 +292,7 @@ public class SonosDeviceTest {
     /**
      * Issue #1 - Danish Zone Name Parsing Problem
      */
-    public void getDanishZoneName() throws Exception {
+    public void getDanishDeviceName() throws Exception {
         MockHelper.mockCommandBuilderDownloadSpeakerInfo("<?xml version=\"1.0\" ?>\n" +
                 "<?xml-stylesheet type=\"text/xsl\" href=\"/xml/review.xsl\"?><ZPSupportInfo><ZPInfo>" +
                 "<ZoneName>0. KÃ¸kken</ZoneName><ZoneIcon>x-rincon-roomicon:kitchen</ZoneIcon>" +
@@ -303,7 +309,7 @@ public class SonosDeviceTest {
                 "<MDP3Ver>0</MDP3Ver><RegState>3</RegState><CustomerID>XXXX</CustomerID>" +
                 "</ZPInfo></ZPSupportInfo>");
 
-        assertEquals("0. KÃ¸kken", new SonosDevice("127.0.0.1").getZoneName());
+        assertEquals("0. KÃ¸kken", new SonosDevice("127.0.0.1").getDeviceName());
     }
 
     @Test(expected = UPnPSonosControllerException.class)
@@ -602,7 +608,7 @@ public class SonosDeviceTest {
         sonosDevice.setLoudness(false);
         sonosDevice.setTreble(8);
         sonosDevice.setNightMode(true);
-        sonosDevice.setZoneName("test");
+        sonosDevice.setRoomName("test");
         sonosDevice.setLedState(true);
         sonosDevice.setLedState(false);
         sonosDevice.setDialogMode(true);

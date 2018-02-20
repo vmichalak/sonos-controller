@@ -146,10 +146,10 @@ public class UnmockedSonosDeviceTest {
     @Test
     public void testZoneName() throws IOException, SonosControllerException, InterruptedException {
         String initialName = sonosDevice.getZoneName();
-        sonosDevice.setZoneName("CURRENTLY IN TEST");
+        sonosDevice.setRoomName("CURRENTLY IN TEST");
         Thread.sleep(100);
         assertEquals("CURRENTLY IN TEST", sonosDevice.getZoneName());
-        sonosDevice.setZoneName(initialName);
+        sonosDevice.setRoomName(initialName);
     }
 
     @Test

@@ -50,3 +50,9 @@ gradle-app.setting
 
 # Sphinx
 doc/_build
+
+# Eclipse
+/.classpath
+/.project
+/.settings/
+/bin/
