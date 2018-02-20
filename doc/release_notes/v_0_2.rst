@@ -1,6 +1,20 @@
 Sonos Controller 0.2 release notes
 ==================================
+**This version is not yet released.**
 
-# Enhancement
+Enhancement
+-----------
 
-    - #24 - Difference between getZoneName() / getRoomName() / getDeviceName() 
+- #24 - Difference between getZoneName() / getRoomName() / getDeviceName().
+- #29 - Add getIpAddress() method to SonosDevice.
+- #30 - Add scanDuration parameter to SonosDiscovery.discover().
+
+For developers
+--------------
+
+- #33 - Eclipse related files are now ignored by .gitignore.
+
+Contributors
+------------
+
+Thanks to anton-johansson and mguntli for their work.
