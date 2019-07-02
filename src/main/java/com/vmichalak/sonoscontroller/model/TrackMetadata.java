@@ -16,15 +16,19 @@ public class TrackMetadata {
         this.album = album;
         this.albumArtURI = albumArtURI;
     }
-
+    
     public static TrackMetadata parse(String metadata) {
-        return new TrackMetadata(
-                ParserHelper.findOne("<dc:title>(.*)</dc:title>", metadata),
-                ParserHelper.findOne("<dc:creator>(.*)</dc:creator>", metadata),
-                ParserHelper.findOne("<r:albumArtist>(.*)</r:albumArtist>", metadata),
-                ParserHelper.findOne("<upnp:album>(.*)</upnp:album>", metadata),
-                ParserHelper.findOne("<upnp:albumArtURI>(.*)</upnp:albumArtURI>", metadata)
-        );
+      
+	    String T = ParserHelper.findOne("<dc:title>(.*)</dc:title>", metadata);
+	    if(T.equals("stream"))
+	    {
+	    	T = ParserHelper.findOne("<r:streamContent>(.*)</r:streamContent>", metadata);
+	    }
+	    String C = ParserHelper.findOne("<dc:creator>(.*)</dc:creator>", metadata);
+	    String AA =ParserHelper.findOne("<r:albumArtist>(.*)</r:albumArtist>", metadata);
+	    String A = ParserHelper.findOne("<upnp:album>(.*)</upnp:album>", metadata);
+	    String AU= ParserHelper.findOne("<upnp:albumArtURI>(.*)</upnp:albumArtURI>", metadata);
+	    return new TrackMetadata(T, C, AA, A, AU);   
     }
 
     public String getTitle() {
