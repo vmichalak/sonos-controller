@@ -529,7 +529,24 @@ public class SonosDevice {
         }
         return itemsParsed;
     }
-
+    
+    public List<Favorite> getFavorites() throws IOException, SonosControllerException
+    {
+    	String r = CommandBuilder.contentDirectory("Browse")
+    			.put("ObjectID", "FV:2")
+    			.put("BrowseFlag", "BrowseDirectChildren")
+    			.put("Filter", "")
+    			.put("StartingIndex", "0")
+    			.put("RequestedCount", "100")
+                .put("SortCriteria", "").executeOn(this.ip);
+        List<String> itemsNonParsed = ParserHelper.findAll("<item .+?(?=>)>(.+?(?=</item>))", r);
+        List<Favorite> itemsParsed = new ArrayList<Favorite>();
+        for (String s : itemsNonParsed) {
+            itemsParsed.add(Favorite.parse(s));
+        }
+        return itemsParsed;
+    }
+    
     //</editor-fold>
 
     //<editor-fold desc="ZONE GROUP TOPOLOGY">
