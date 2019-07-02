@@ -513,6 +513,14 @@ public class SonosDevice {
 
     //<editor-fold desc="CONTENT DIRECTORY">
 
+    /**
+     * Gets favorites from the sonosdevice.
+     * @throws IOException
+     * @throws SonosControllerException
+     * @param startingIndex
+     * @param requestedCount
+     * @return Returns a List TrackMetaData from the queue
+     */
     public List<TrackMetadata> getQueue(int startingIndex, int requestedCount) throws IOException, SonosControllerException {
         String r = CommandBuilder.contentDirectory("Browse")
                 .put("ObjectID", "Q:0")
@@ -530,14 +538,23 @@ public class SonosDevice {
         return itemsParsed;
     }
     
-    public List<Favorite> getFavorites() throws IOException, SonosControllerException
+    
+    /**
+     * Gets favorites from the sonosdevice.
+     * @throws IOException
+     * @throws SonosControllerException
+     * @param startingIndex
+     * @param requestedCount
+     * @return Returns a List of favorites
+     */
+    public List<Favorite> getFavorites(Integer startingIndex, Integer requestedCount) throws IOException, SonosControllerException
     {
     	String r = CommandBuilder.contentDirectory("Browse")
     			.put("ObjectID", "FV:2")
     			.put("BrowseFlag", "BrowseDirectChildren")
     			.put("Filter", "")
-    			.put("StartingIndex", "0")
-    			.put("RequestedCount", "100")
+    			.put("StartingIndex", String.valueOf(startingIndex))
+    			.put("RequestedCount", String.valueOf(requestedCount))
                 .put("SortCriteria", "").executeOn(this.ip);
         List<String> itemsNonParsed = ParserHelper.findAll("<item .+?(?=>)>(.+?(?=</item>))", r);
         List<Favorite> itemsParsed = new ArrayList<Favorite>();
