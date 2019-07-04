@@ -16,13 +16,13 @@ public class Favorite {
         this.protocolinfo=protoclinfo;
         
     }
-
+    
     public static Favorite parse(String metadata) {
         return new Favorite(
                 ParserHelper.findOne("<dc:title>(.*?)</dc:title>", metadata),
                 ParserHelper.findOne("<upnp:albumArtURI>(.*)</upnp:albumArtURI>", metadata),
                 ParserHelper.findOne("<r:description>(.*)</r:description>", metadata),
-                ParserHelper.findOne("<res protocolInfo=\"x-sonosapi-stream:*:*:*\">" , metadata)
+                ParserHelper.findOne("<res protocolInfo=.*>(.*)</res>" , metadata)
                 
         );
     }
@@ -45,6 +45,8 @@ public class Favorite {
                 '}';
     }
     
+    
+    
 	public String getProtocolinfo() {
 		return protocolinfo;
 	}
@@ -53,5 +55,14 @@ public class Favorite {
 		return description;
 	}
 
+    public String toDIDL() {
+        return "<DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" xmlns:r=\"urn:schemas-rinconnetworks-com:metadata-1-0/\" xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\">" +
+                    "<item>" +
+                        "<dc:title>" + title + "</dc:title>" +
+                        "<r:description>" + description + "</r:description>" +
+                        "<upnp:albumArtURI>" + albumArtURI + "</upnp:albumArtURI>" +
+                    "</item>" +
+                "</DIDL-Lite>";
+    }
 
 }
