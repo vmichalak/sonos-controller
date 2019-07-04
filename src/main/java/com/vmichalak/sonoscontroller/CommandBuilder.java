@@ -22,6 +22,10 @@ class CommandBuilder {
     private static final String ZONE_GROUP_TOPOLOGY_ENDPOINT = "/ZoneGroupTopology/Control";
     private static final String ZONE_GROUP_TOPOLOGY_SERVICE  = "urn:upnp-org:serviceId:ZoneGroupTopology";
 
+	public static final String RADIO_STATIONS="FV:0";
+	public static final String RADIO_SHOWS="FV:1";
+	public static final String SONOS_FAVORITES="FV:2";
+    
     private static final HashMap<Integer, String> ERROR_DESCRIPTION_MAP = new HashMap<Integer, String>();
 
     static {
