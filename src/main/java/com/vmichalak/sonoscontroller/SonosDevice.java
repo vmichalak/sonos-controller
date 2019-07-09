@@ -93,7 +93,7 @@ public class SonosDevice {
      * @param directory to search (FV:0/1/2)
      * @return Returns a List of favorites
      */
-    private List<Favorite> getFavorites(Integer startingIndex, Integer requestedCount, String Directory) throws IOException, SonosControllerException
+    public List<Favorite> getFavorites(Integer startingIndex, Integer requestedCount, String Directory) throws IOException, SonosControllerException
     {
     	String r = CommandBuilder.contentDirectory("Browse")
     			.put("ObjectID", Directory)
