@@ -22,7 +22,7 @@ public class SonosDevice {
      * @return Returns the remote IP address of the device.
      */
     public String getIpAddress() {
-        return this.ip;
+    	return this.ip;        
     }
 
     //<editor-fold desc="AV TRANSPORT">
@@ -50,7 +50,6 @@ public class SonosDevice {
                 .put("CurrentURIMetaData", metadataString).executeOn(this.ip);
         this.play();
     }
-
 
     /**
      * Play an item from the queue.
@@ -84,7 +83,73 @@ public class SonosDevice {
         this.seek(previous.getPosition());
         if(previousState.equals(PlayState.PLAYING)) { this.play(); } else { this.pause(); }
     }
+    
+    /**
+     * Gets favorites from the sonosdevice.
+     * @throws IOException
+     * @throws SonosControllerException
+     * @param startingIndex
+     * @param requestedCount
+     * @param directory to search (FV:0/1/2)
+     * @return Returns a List of favorites
+     */
+    public List<Favorite> getFavorites(Integer startingIndex, Integer requestedCount, String Directory) throws IOException, SonosControllerException
+    {
+    	String r = CommandBuilder.contentDirectory("Browse")
+    			.put("ObjectID", Directory)
+    			.put("BrowseFlag", "BrowseDirectChildren")
+    			.put("Filter", "")
+    			.put("StartingIndex", String.valueOf(startingIndex))
+    			.put("RequestedCount", String.valueOf(requestedCount))
+                .put("SortCriteria", "").executeOn(this.ip);
+        List<String> itemsNonParsed = ParserHelper.findAll("<item .+?(?=>)>(.+?(?=</item>))", r);
+        List<Favorite> itemsParsed = new ArrayList<Favorite>();
+        for (String s : itemsNonParsed) {
+            itemsParsed.add(Favorite.parse(s));
+        }
+        return itemsParsed;
+    }
 
+    /**
+     * Gets favorites from the sonosdevice.
+     * @throws IOException
+     * @throws SonosControllerException
+     * @param startingIndex
+     * @param requestedCount
+     * @return Returns a List of favorites
+     */
+    public List<Favorite> getFavoriteRadioStations(Integer startingIndex, Integer requestedCount) throws IOException, SonosControllerException
+    {
+    	return getFavorites(startingIndex, requestedCount, CommandBuilder.RADIO_STATIONS);
+    }
+    
+    /**
+     * Gets favorites from the sonosdevice.
+     * @throws IOException
+     * @throws SonosControllerException
+     * @param startingIndex
+     * @param requestedCount
+     * @return Returns a List of favorites
+     */
+    public List<Favorite> getFavoriteRadioShows(Integer startingIndex, Integer requestedCount) throws IOException, SonosControllerException
+    {
+    	return getFavorites(startingIndex, requestedCount, CommandBuilder.RADIO_SHOWS);
+    }
+    
+    /**
+     * Gets favorites from the sonosdevice.
+     * @throws IOException
+     * @throws SonosControllerException
+     * @param startingIndex
+     * @param requestedCount
+     * @return Returns a List of favorites
+     */
+    public List<Favorite> getSonosFavorites(Integer startingIndex, Integer requestedCount) throws IOException, SonosControllerException
+    {
+    	return getFavorites(startingIndex, requestedCount, CommandBuilder.SONOS_FAVORITES);
+    }
+    
+    
     /**
      * Pause the currently playing track.
      * @throws IOException
