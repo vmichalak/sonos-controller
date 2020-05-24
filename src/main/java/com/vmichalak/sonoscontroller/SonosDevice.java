@@ -157,6 +157,16 @@ public class SonosDevice {
     }
 
     /**
+     * Save the current queue as a PlayList (SavedQueue)
+     * @param playlistName the name of the playlist that will be used when saving
+     * @param id of the new play list. If the id correspond to an existing one, then the current playlist is overriden
+     */
+    public void saveCurrentQueueAsPlayList(String playlistName,int id) throws IOException, SonosControllerException {
+        CommandBuilder.transport("SaveQueue").put("InstanceID", "0").put("ObjectID", String.valueOf(id)).put("Title", playlistName)
+                .executeOn(this.ip);
+    }
+
+    /**
      * Get Current Track Info (position in the queue, duration, position, ...).
      * @return TrackInfo object.
      * @throws IOException
